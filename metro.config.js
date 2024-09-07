@@ -1,4 +1,5 @@
-const {getDefaultConfig, mergeConfig} = require('@react-native/metro-config');
+const { getDefaultConfig } = require('@react-native/metro-config');
+const path = require('path');
 
 /**
  * Metro configuration
@@ -6,13 +7,20 @@ const {getDefaultConfig, mergeConfig} = require('@react-native/metro-config');
  *
  * @type {import('metro-config').MetroConfig}
  */
-const config = {};
-
-const exclusionList = require('metro-config/src/defaults/exclusionList');
-module.exports = {
+const config = {
   resolver: {
-    blacklistRE: exclusionList([/node_modules\/.*/])
-  }
+    blockList: [
+      /node_modules\/.*/
+    ],
+  },
+  watchFolders: [
+    // You can add additional watch folders here if needed
+    path.resolve(__dirname, 'src'),
+  ],
 };
 
-// module.exports = mergeConfig(getDefaultConfig(__dirname), config);
+// Extend the default config with custom settings
+module.exports = {
+  ...getDefaultConfig(__dirname),
+  ...config,
+};
