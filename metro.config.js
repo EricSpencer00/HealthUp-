@@ -14,7 +14,8 @@ const config = {
     ],
   },
   watchFolders: [
-    // You can add additional watch folders here if needed
+    // Add additional watch folders if needed
+    // Ensure the 'src' directory exists or adjust the path as necessary
     path.resolve(__dirname, 'src'),
   ],
 };
