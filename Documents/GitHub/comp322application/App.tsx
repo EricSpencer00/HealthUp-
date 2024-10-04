@@ -55,8 +55,8 @@ function FitnessScreen({ route }) {
   return (
     <View style={styles.container}>
       <Text>Here are the types of exercises you can do</Text>
-      for(int i : types) {
-        <Text>{ types }: i</Text>
+      for(int i : styles) {
+        <Text>:</Text>
       }
     </View>
   );
