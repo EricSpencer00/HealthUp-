@@ -24,6 +24,10 @@ function HomeScreen({ navigation }) {
         title="Go to Welcome"
         onPress={() => navigation.navigate('Welcome', { userName: 'John Doe' })}
       />
+      <Button 
+        title="Go to Fitness"
+        onPress={() => navigation.navigate('Fitness')}
+      />
     </View>
   );
 }
@@ -46,7 +50,7 @@ function WelcomeScreen({ route }) {
 }
 
 function FitnessScreen({ route }) {
-  Array types = ["hi", "hello"]
+  var types = ["hi", "hello"]
 
   return (
     <View style={styles.container}>
