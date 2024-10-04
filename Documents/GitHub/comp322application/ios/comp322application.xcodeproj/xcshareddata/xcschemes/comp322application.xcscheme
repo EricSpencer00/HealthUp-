@@ -15,9 +15,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-               BuildableName = "comp322application.app"
-               BlueprintName = "comp322application"
-               ReferencedContainer = "container:comp322application.xcodeproj">
+               BuildableName = "fitnessApp.app"
+               BlueprintName = "fitnessApp"
+               ReferencedContainer = "container:fitnessApp.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -33,9 +33,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "00E356ED1AD99517003FC87E"
-               BuildableName = "comp322applicationTests.xctest"
-               BlueprintName = "comp322applicationTests"
-               ReferencedContainer = "container:comp322application.xcodeproj">
+               BuildableName = "fitnessAppTests.xctest"
+               BlueprintName = "fitnessAppTests"
+               ReferencedContainer = "container:fitnessApp.xcodeproj">
             </BuildableReference>
          </TestableReference>
       </Testables>
@@ -55,9 +55,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-            BuildableName = "comp322application.app"
-            BlueprintName = "comp322application"
-            ReferencedContainer = "container:comp322application.xcodeproj">
+            BuildableName = "fitnessApp.app"
+            BlueprintName = "fitnessApp"
+            ReferencedContainer = "container:fitnessApp.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </LaunchAction>
@@ -72,9 +72,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-            BuildableName = "comp322application.app"
-            BlueprintName = "comp322application"
-            ReferencedContainer = "container:comp322application.xcodeproj">
+            BuildableName = "fitnessApp.app"
+            BlueprintName = "fitnessApp"
+            ReferencedContainer = "container:fitnessApp.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>

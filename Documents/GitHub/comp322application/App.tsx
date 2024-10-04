@@ -2,6 +2,7 @@ import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { View, Text, Button, StyleSheet } from 'react-native';
+import { EventTypes } from 'react-native-gesture-handler/lib/typescript/web/interfaces';
 
 // Define types for navigation
 export type RootStackParamList = {
@@ -36,10 +37,23 @@ function WelcomeScreen({ route }) {
       {/* <Text style={styles.title}>Welcome {userName}!</Text> */}
       {/* <Text style={styles.title}>We hope you enjoy your stay here at Fitness App!</Text> */}
       <Text> Hello! to start, why don't you tell me your name?</Text>
-      <Button
+      {/* <Button
         title='Tell Me Your Name'
         onPress={() TextInput}
-      ></Button>
+      ></Button> */}
+    </View>
+  );
+}
+
+function FitnessScreen({ route }) {
+  Array types = ["hi", "hello"]
+
+  return (
+    <View style={styles.container}>
+      <Text>Here are the types of exercises you can do</Text>
+      for(int i : types) {
+        <Text>{ types }: i</Text>
+      }
     </View>
   );
 }
@@ -51,6 +65,7 @@ export default function App() {
       <Stack.Navigator initialRouteName="Home">
         <Stack.Screen name="Home" component={HomeScreen} />
         <Stack.Screen name="Welcome" component={WelcomeScreen} />
+        <Stack.Screen name="Fitness" component={FitnessScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );
