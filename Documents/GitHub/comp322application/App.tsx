@@ -7,6 +7,8 @@ import { View, Text, Button, StyleSheet } from 'react-native';
 export type RootStackParamList = {
   Home: undefined;
   Welcome: { userName: string };
+  FitnessList: { /* API Calls here */}
+  SignIn: { /* Possible Sign In Screen */}
 };
 
 // Create the stack navigator
@@ -31,7 +33,13 @@ function WelcomeScreen({ route }) {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Welcome {userName}!</Text>
+      {/* <Text style={styles.title}>Welcome {userName}!</Text> */}
+      {/* <Text style={styles.title}>We hope you enjoy your stay here at Fitness App!</Text> */}
+      <Text> Hello! to start, why don't you tell me your name?</Text>
+      <Button
+        title='Tell Me Your Name'
+        onPress={() TextInput}
+      ></Button>
     </View>
   );
 }
