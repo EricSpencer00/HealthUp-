@@ -50,7 +50,7 @@ function WelcomeScreen({ route }) {
 }
 
 function FitnessScreen({ route }) {
-  var types = ["hi", "hello"]
+  var types = ["hi", "hello"] 
 
   return (
     <View style={styles.container}>
