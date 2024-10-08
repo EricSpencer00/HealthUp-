@@ -4,23 +4,16 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { View, Text, Button, StyleSheet } from 'react-native';
 import { EventTypes } from 'react-native-gesture-handler/lib/typescript/web/interfaces';
 
-// Home Screen Component
-export default function HomeScreen({ navigation }) {
+export default function CurrentWorkout({ route }) {
+  var types = ["hi", "hello"] 
+
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Home Screen</Text>
-      <Button
-        title="Go to Welcome"
-        onPress={() => navigation.navigate('Welcome', { userName: 'John Doe' })}
-      />
-      <Button 
-        title="Go to Fitness"
-        onPress={() => navigation.navigate('Fitness')}
-      />
-      <Button
-        title="Go to Workout Diary"
-        onPress={() => navigation.navigate('WorkoutDiary')}
-      />
+      <Text style={styles.title}>TODAY'S WORKOUT</Text>
+      <Text>{'\n'}Load exercise list</Text>
+      <Text>Current exercise, start from exercises[0]{'\n'}</Text>
+      <Text>{'\n'}Carousel, prev exercise & next exercise, show image of exercise</Text>
+      <Text>Add set 1: # reps</Text>
     </View>
   );
 }

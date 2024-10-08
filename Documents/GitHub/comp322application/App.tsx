@@ -8,6 +8,8 @@ import { EventTypes } from 'react-native-gesture-handler/lib/typescript/web/inte
 import WelcomeScreen from './components/WelcomeScreen';
 import FitnessScreen from './components/FitnessScreen';
 import HomeScreen from './components/HomeScreen';
+import WorkoutDiary from './components/WorkoutDiary/WorkoutDiaryScreen';
+import CurrentWorkout from './components/WorkoutDiary/CurrentWorkoutScreen';
 
 // Define types for navigation
 export type RootStackParamList = {
@@ -29,6 +31,8 @@ export default function App() {
         <Stack.Screen name="Home" component={HomeScreen} />
         <Stack.Screen name="Welcome" component={WelcomeScreen} />
         <Stack.Screen name="Fitness" component={FitnessScreen} />
+        <Stack.Screen name="WorkoutDiary" component={WorkoutDiary} />
+        <Stack.Screen name="CurrentWorkout" component={CurrentWorkout} />
       </Stack.Navigator>
     </NavigationContainer>
   );
