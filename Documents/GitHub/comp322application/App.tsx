@@ -4,6 +4,11 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { View, Text, Button, StyleSheet } from 'react-native';
 import { EventTypes } from 'react-native-gesture-handler/lib/typescript/web/interfaces';
 
+// Moved components into own folder, import them here to be used in App
+import WelcomeScreen from './components/WelcomeScreen';
+import FitnessScreen from './components/FitnessScreen';
+import HomeScreen from './components/HomeScreen';
+
 // Define types for navigation
 export type RootStackParamList = {
   Home: undefined;
@@ -15,52 +20,6 @@ export type RootStackParamList = {
 // Create the stack navigator
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
-// Home Screen Component
-function HomeScreen({ navigation }) {
-  return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Home Screen</Text>
-      <Button
-        title="Go to Welcome"
-        onPress={() => navigation.navigate('Welcome', { userName: 'John Doe' })}
-      />
-      <Button 
-        title="Go to Fitness"
-        onPress={() => navigation.navigate('Fitness')}
-      />
-    </View>
-  );
-}
-
-// Welcome Screen Component
-function WelcomeScreen({ route }) {
-  const { userName } = route.params;
-
-  return (
-    <View style={styles.container}>
-      {/* <Text style={styles.title}>Welcome {userName}!</Text> */}
-      {/* <Text style={styles.title}>We hope you enjoy your stay here at Fitness App!</Text> */}
-      <Text> Hello! to start, why don't you tell me your name?</Text>
-      {/* <Button
-        title='Tell Me Your Name'
-        onPress={() TextInput}
-      ></Button> */}
-    </View>
-  );
-}
-
-function FitnessScreen({ route }) {
-  var types = ["hi", "hello"] 
-
-  return (
-    <View style={styles.container}>
-      <Text>Here are the types of exercises you can do</Text>
-      for(int i : styles) {
-        <Text>:</Text>
-      }
-    </View>
-  );
-}
 
 // Main App Component
 export default function App() {
