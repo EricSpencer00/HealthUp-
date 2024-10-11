@@ -19,8 +19,8 @@ export default function NutritionScreen({ route }) {
           },
           {
             headers: {
-              'x-app-id': os.getenv("NUTRITIONIX_APP_ID"),      // Replace with your Nutritionix app ID
-              'x-app-key': os.getenv("NUTRITIONIX_APP_KEY"),    // Replace with your Nutritionix API key
+              'x-app-id': os.getenv("NUTRITIONIX_APP_ID"),
+              'x-app-key': os.getenv("NUTRITIONIX_APP_KEY"),
               'Content-Type': 'application/json',
             },
           }
