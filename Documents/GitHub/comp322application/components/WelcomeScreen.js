@@ -1,6 +1,6 @@
 import React, { useState, useContext } from 'react';
 import { View, Text, Button, StyleSheet, TextInput } from 'react-native';
-import { UserContext } from './UserContext'; // Assuming you have a separate file for global context
+import { UserContext } from './UserContext';
 
 // Welcome Screen Component
 export function WelcomeScreen({ navigation }) {
