@@ -1,14 +1,52 @@
-import React, { useContext, useState } from 'react';
-import { View, Text, TextInput, Button, StyleSheet } from 'react-native';
-import { UserContext } from './UserContext';
-import { useNavigation } from '@react-navigation/native';
+import React, { useState, useContext } from 'react';
+import { View, Text, Button, StyleSheet, TextInput } from 'react-native';
+import { UserContext } from './UserContext'; // Assuming you have a separate file for global context
 
-export default function UserSettingsScreen() {
+// Welcome Screen Component
+export function WelcomeScreen({ navigation }) {
+  const { userName, weight, favoriteFoods } = useContext(UserContext);
+
+  return (
+    <View style={styles.container}>
+      <Text style={styles.title}>Welcome to the Fitness App!</Text>
+
+      <Text style={styles.info}>User Name: {userName || "Not Set"}</Text>
+      <Text style={styles.info}>Weight: {weight || "Not Set"} kg</Text>
+      <Text style={styles.info}>Favorite Foods: {favoriteFoods || "Not Set"}</Text>
+
+      <Button
+        title="Go to User Settings"
+        onPress={() => navigation.navigate('UserSettings')}
+      />
+
+      <Button
+        title="View User Info"
+        onPress={() => navigation.navigate('UserInfo')}
+      />
+    </View>
+  );
+}
+
+// User Info Screen Component
+export function UserInfoScreen() {
+  const { userName, weight, favoriteFoods } = useContext(UserContext);
+
+  return (
+    <View style={styles.container}>
+      <Text style={styles.title}>User Information</Text>
+      <Text style={styles.info}>Name: {userName}</Text>
+      <Text style={styles.info}>Weight: {weight} kg</Text>
+      <Text style={styles.info}>Favorite Foods: {favoriteFoods}</Text>
+    </View>
+  );
+}
+
+// User Settings Screen Component
+export function UserSettingsScreen({ navigation }) {
   const { userName, setUserName, weight, setWeight, favoriteFoods, setFavoriteFoods } = useContext(UserContext);
-  const navigation = useNavigation();
 
   const handleSave = () => {
-    navigation.goBack();  // Navigates back to the previous screen
+    navigation.navigate('Welcome');
   };
 
   return (
@@ -37,16 +75,18 @@ export default function UserSettingsScreen() {
         onChangeText={setFavoriteFoods}
       />
 
-      <Button title="Save" onPress={handleSave} />
+      <Button title="Save Settings" onPress={handleSave} />
     </View>
   );
 }
 
+// Styles
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    backgroundColor: '#F5FCFF',
     padding: 16,
   },
   title: {
@@ -56,9 +96,14 @@ const styles = StyleSheet.create({
   },
   input: {
     width: '100%',
-    padding: 10,
+    height: 40,
+    borderColor: 'gray',
     borderWidth: 1,
-    borderColor: '#ccc',
     marginBottom: 12,
+    paddingHorizontal: 8,
+  },
+  info: {
+    fontSize: 18,
+    marginTop: 8,
   },
 });
