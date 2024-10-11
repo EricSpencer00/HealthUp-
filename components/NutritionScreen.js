@@ -8,8 +8,6 @@ export default function NutritionScreen({ route }) {
   const { barcode } = route.params; // Get the barcode from the route
   const [nutritionData, setNutritionData] = useState(null);
   const [loading, setLoading] = useState(true);
-  NUTRITIONIX_APP_KEY = os.getenv('NUTRITIONIX_APP_KEY')
-  NUTRITIONIX_APP_ID = os.getenv('NUTRITIONIX_APP_ID')
 
   useEffect(() => {
     const fetchNutritionData = async () => {
@@ -21,8 +19,8 @@ export default function NutritionScreen({ route }) {
           },
           {
             headers: {
-              'x-app-id': NUTRIONIX_APP_ID,
-              'x-app-key': NUTRITIONIX_APP_KEY,
+              'x-app-id': os.getenv('NUTRITIONIX_APP_ID'),
+              'x-app-key': os.getenv('NUTRITIONIX_APP_KEY'),
               'Content-Type': 'application/json',
             },
           }

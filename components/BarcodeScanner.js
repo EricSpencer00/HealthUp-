@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, ActivityIndicator } from 'react-native';
 import axios from 'axios';
+import os from 'os';
 
 export default function NutritionScreen({ route }) {
   const { barcode } = route.params; // Get the barcode from the route
@@ -18,8 +19,8 @@ export default function NutritionScreen({ route }) {
           },
           {
             headers: {
-              'x-app-id': 'YOUR_APP_ID',      // Replace with your Nutritionix app ID
-              'x-app-key': 'YOUR_APP_KEY',    // Replace with your Nutritionix API key
+              'x-app-id': os.getenv("NUTRITIONIX_APP_ID"),      // Replace with your Nutritionix app ID
+              'x-app-key': os.getenv("NUTRITIONIX_APP_KEY"),    // Replace with your Nutritionix API key
               'Content-Type': 'application/json',
             },
           }
