@@ -17,10 +17,10 @@ export default function HomeScreen({ navigation }) {
         title="Go to Fitness"
         onPress={() => navigation.navigate('Fitness')}
       />
-      <Button 
+      {/* <Button 
         title="Go to Nutrition"
         onPress={() => navigation.navigate('NutritionScreen')}
-      ></Button>
+      ></Button> */}
       <Button
         title="Go to Barcode Scanner"
         onPress={() => navigation.navigate('BarcodeScanner')}
