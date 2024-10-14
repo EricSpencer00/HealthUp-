@@ -21,6 +21,14 @@ export default function HomeScreen({ navigation }) {
         title="Go to Workout Diary"
         onPress={() => navigation.navigate('WorkoutDiary')}
       />
+      {/* <Button 
+        title="Go to Nutrition"
+        onPress={() => navigation.navigate('NutritionScreen')}
+      ></Button> */}
+      <Button
+        title="Go to Barcode Scanner"
+        onPress={() => navigation.navigate('BarcodeScanner')}
+      ></Button>
     </View>
   );
 }
