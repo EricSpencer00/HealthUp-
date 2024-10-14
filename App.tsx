@@ -13,6 +13,8 @@ import UserInfoScreen from './components/UserInfoScreen';
 import { UserProvider } from './components/UserContext';
 import NutritionScreen from './components/NutritionScreen';
 import BarcodeScanner from './components/BarcodeScanner';
+import WorkoutDiary from './components/WorkoutDiary/WorkoutDiaryScreen';
+import CurrentWorkoutScreen from './components/WorkoutDiary/WorkoutDiaryScreen';
 
 
 // Define types for navigation
@@ -26,6 +28,8 @@ export type RootStackParamList = {
   UserInfo: undefined;
   NutritionScreen: undefined;
   BarcodeScanner: undefined;
+  WorkoutDiary: undefined;
+  CurrentWorkoutScren: undefined;
 };
 
 // Create the stack navigator
@@ -45,6 +49,9 @@ export default function App() {
           <Stack.Screen name="UserInfo" component={UserInfoScreen} />
           <Stack.Screen name="NutritionScreen" component={NutritionScreen} />
           <Stack.Screen name="BarcodeScanner" component={BarcodeScanner} />
+          <Stack.Screen name="WorkoutDiary" component={WorkoutDiary} />
+          <Stack.Screen name="CurrentWorkoutScreen" component={CurrentWorkoutScreen} />
+          
         </Stack.Navigator>
       </NavigationContainer>
     </UserProvider>
