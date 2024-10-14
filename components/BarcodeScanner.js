@@ -1,55 +1,50 @@
-// NutritionScreen.js
-import React, { useEffect, useState } from 'react';
-import { View, Text, ActivityIndicator } from 'react-native';
-import axios from 'axios';
+import React, { useState } from 'react';
+import { View, Text, Button, StyleSheet } from 'react-native';
+// import { Camera } from 'react-native-camera'; // Or use expo-barcode-scanner
+import { useNavigation } from '@react-navigation/native';
 
-export default function NutritionScreen({ route }) {
-  const { barcode } = route.params; // Get the barcode from the route
-  const [nutritionData, setNutritionData] = useState(null);
-  const [loading, setLoading] = useState(true);
+export default function BarcodeScreen() {
+  const [barcode, setBarcode] = useState(null);
+  const navigation = useNavigation();
 
-  useEffect(() => {
-    const fetchNutritionData = async () => {
-      try {
-        const response = await axios.post(
-          'https://trackapi.nutritionix.com/v2/search/item',
-          {
-            upc: barcode, // The scanned barcode
-          },
-          {
-            headers: {
-              'x-app-id': 'YOUR_APP_ID',      // Replace with your Nutritionix app ID
-              'x-app-key': 'YOUR_APP_KEY',    // Replace with your Nutritionix API key
-              'Content-Type': 'application/json',
-            },
-          }
-        );
-        setNutritionData(response.data);
-      } catch (error) {
-        console.error('Error fetching data', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchNutritionData();
-  }, [barcode]);
-
-  if (loading) {
-    return <ActivityIndicator />;
-  }
-
-  if (!nutritionData) {
-    return <Text>No data found for this product.</Text>;
-  }
+  const handleBarcodeScanned = (data) => {
+    setBarcode(data);
+    navigation.navigate('NutritionScreen', { barcodeData: data });
+  };
 
   return (
-    <View>
-      <Text>Product: {nutritionData.foods[0].food_name}</Text>
-      <Text>Calories: {nutritionData.foods[0].nf_calories}</Text>
-      <Text>Carbs: {nutritionData.foods[0].nf_total_carbohydrate}</Text>
-      <Text>Protein: {nutritionData.foods[0].nf_protein}</Text>
-      <Text>Fat: {nutritionData.foods[0].nf_total_fat}</Text>
+    <View style={styles.container}>
+      <Text style={styles.title}>Scan a Barcode</Text>
+      
+      {/* 
+        Add barcode scanning logic here using libraries like react-native-camera 
+        or expo-barcode-scanner 
+      */}
+
+      <Button title="Simulate Barcode Scan" onPress={() => handleBarcodeScanned("123456789")} />
+      
+      {barcode && <Text style={styles.result}>Scanned Barcode: {barcode}</Text>}
     </View>
   );
 }
+
+// Styles
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+    backgroundColor: '#f0f0f0',
+  },
+  title: {
+    fontSize: 22,
+    fontWeight: 'bold',
+    marginBottom: 20,
+  },
+  result: {
+    fontSize: 18,
+    marginTop: 20,
+    color: 'green',
+  },
+});
