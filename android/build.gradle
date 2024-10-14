@@ -1,16 +1,3 @@
-android {
-    flavorDimensions "react-native-camera"
-
-    productFlavors {
-        general {
-            dimension "react-native-camera"
-        }
-        mlkit {
-            dimension "react-native-camera"
-        }
-    }
-}
-
 buildscript {
     ext {
         buildToolsVersion = "34.0.0"
@@ -31,4 +18,4 @@ buildscript {
     }
 }
 
-apply plugin: "com.facebook.react.root" // Updated plugin name for newer React Native versions
+apply plugin: "com.facebook.react" // Updated plugin name for newer React Native versions
