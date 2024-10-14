@@ -77,16 +77,7 @@ android {
     buildToolsVersion rootProject.ext.buildToolsVersion
     compileSdk rootProject.ext.compileSdkVersion
 
-    flavorDimensions "react-native-camera"
-
-    productFlavors {
-        general {
-            dimension "react-native-camera"
-        }
-        mlkit {
-            dimension "react-native-camera"
-        }
-    }
+    
 
     namespace "com.fitnessApp"
     defaultConfig {
