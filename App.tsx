@@ -43,8 +43,8 @@ export default function App() {
           <Stack.Screen name="Fitness" component={FitnessScreen} />
           <Stack.Screen name="UserSettings" component={UserSettingsScreen} />
           <Stack.Screen name="UserInfo" component={UserInfoScreen} />
-          <Stack.Screen name="NutritionScreen" component={UserInfoScreen} />
-          <Stack.Screen name="BarcodeScanner" component={UserInfoScreen} />
+          <Stack.Screen name="NutritionScreen" component={NutritionScreen} />
+          <Stack.Screen name="BarcodeScanner" component={BarcodeScanner} />
         </Stack.Navigator>
       </NavigationContainer>
     </UserProvider>
