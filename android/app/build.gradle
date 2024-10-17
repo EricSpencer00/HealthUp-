@@ -77,8 +77,6 @@ android {
     buildToolsVersion rootProject.ext.buildToolsVersion
     compileSdk rootProject.ext.compileSdkVersion
 
-    
-
     namespace "com.fitnessApp"
     defaultConfig {
         applicationId "com.fitnessApp"
