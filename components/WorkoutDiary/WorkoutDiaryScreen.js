@@ -3,7 +3,7 @@ import { View, Text, Button, StyleSheet, TextInput, FlatList, TouchableOpacity, 
 import { getFirestore, collection, addDoc, getDocs , deleteDoc, doc } from 'firebase/firestore'; 
 import { initializeApp } from 'firebase/app';
 
-import app from './../FirebaseConfig';
+import app from '../../firebase/FirebaseConfig';
 const db = getFirestore(app);
 
 

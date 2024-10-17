@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, Button, StyleSheet } from 'react-native';
-// import { Camera } from 'react-native-camera'; // Or use expo-barcode-scanner
+import { Camera } from 'react-native-camera'; // Or use expo-barcode-scanner
 import { useNavigation } from '@react-navigation/native';
 
 export default function BarcodeScreen() {
@@ -21,7 +21,7 @@ export default function BarcodeScreen() {
         or expo-barcode-scanner 
       */}
 
-      <Button title="Simulate Barcode Scan" onPress={() => handleBarcodeScanned("123456789")} />
+      <Button title="Simulate Barcode Scan" onPress={() => handleBarcodeScanned("0012345678910")} />
       
       {barcode && <Text style={styles.result}>Scanned Barcode: {barcode}</Text>}
     </View>

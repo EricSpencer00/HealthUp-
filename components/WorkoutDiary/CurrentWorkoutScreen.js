@@ -4,7 +4,7 @@ import { getFirestore, getDocs, collection } from 'firebase/firestore';
 
 import { CountdownCircleTimer } from 'react-native-countdown-circle-timer';
 
-import app from './../FirebaseConfig';
+import app from '../../firebase/firebaseConfig';
 // import { TextInput } from 'react-native-gesture-handler';
 const db = getFirestore(app);
 let exerciseList = []

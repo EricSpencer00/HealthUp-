@@ -8,6 +8,11 @@ import { EventTypes } from 'react-native-gesture-handler/lib/typescript/web/inte
 export default function HomeScreen({ navigation }) {
   return (
     <View style={styles.container}>
+      <Text style={styles.title}>Welcome to the Fitness App!</Text>
+      <Button 
+        title="Sign In" 
+        onPress={() => navigation.navigate('SignIn')} 
+      />
       <Text style={styles.title}>Home Screen</Text>
       <Button
         title="Go to Welcome"
@@ -21,10 +26,14 @@ export default function HomeScreen({ navigation }) {
         title="Go to Workout Diary"
         onPress={() => navigation.navigate('WorkoutDiary')}
       />
-      {/* <Button 
+      <Button 
         title="Go to Nutrition"
         onPress={() => navigation.navigate('NutritionScreen')}
-      ></Button> */}
+      ></Button>
+      <Button
+        title="Go to Journal"
+        onPress={() => navigation.navigate('JournalScreen')}
+      ></Button>  
       <Button
         title="Go to Barcode Scanner"
         onPress={() => navigation.navigate('BarcodeScanner')}
