@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, Button, StyleSheet } from 'react-native';
 import { getFirestore, doc, getDoc, query, getDocs, collection } from 'firebase/firestore';
 
@@ -7,6 +7,10 @@ const db = getFirestore(app);
 
 export default function CurrentWorkout({ navigation }) {
   const [exerciseListState, setExerciseListState] = useState([]);
+
+  useEffect(() => {
+    loadData();
+  }, []);
 
   async function loadData() {
     try {
@@ -37,8 +41,8 @@ export default function CurrentWorkout({ navigation }) {
       <Text style={styles.title}>TODAY'S WORKOUT</Text>
 
       {/* <Text>{exerciseListState}</Text> */}
-      {exerciseListState.map(exercise => (
-        <Text>{exercise}</Text>
+      {exerciseListState.map((exercise, index) => (
+        <Text key={index}>{exercise}</Text>
       ))}
       <Button title="Load exercises" onPress={loadData} />
       <Button title="Clear exercises" onPress={clearLocalData} />

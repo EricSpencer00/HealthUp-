@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, Button, StyleSheet, TextInput } from 'react-native';
-import { getFirestore, collection, addDoc } from 'firebase/firestore'; 
+import { getFirestore, collection, addDoc, getDocs , query, where } from 'firebase/firestore'; 
 import { initializeApp } from 'firebase/app';
 
 import app from './../FirebaseConfig';
 const db = getFirestore(app);
+
 
 export default function WorkoutDiary({ navigation }) {
   const [exerciseName, setExerciseName] = useState('');
@@ -23,12 +24,54 @@ export default function WorkoutDiary({ navigation }) {
     }
   }
 
+  // State to hold the exerciseList
+  const [exerciseList, setExerciseList] = useState([]);
+
+  async function loadData() {
+    // Try catch to handle the promise from getDocs
+    try {
+      // Getdocs returns a promise, handle with 'await'
+      const querySnapshot = await getDocs(collection(db, "exercises"))
+      // Avoiding mutating the array state
+      const newList = []
+      // Arrow function in JS
+      querySnapshot.forEach((doc) => {
+        newList.push(doc.data()["exercise"]);
+        console.log("Adding: ", doc.data());
+      });
+      setExerciseList(newList);
+      console.log("Added exercises");
+    } catch (error) {
+      console.log("Error loading data: ", error);
+    }
+  }
+
+  // Wrapper for the two functions, so the button can run both
+  async function createAndLoad() {
+    try {
+      create();
+      loadData();
+    } catch (error) {
+      console.log("Error creating and loading data: ", error);
+    }
+  }
+
+  // Load data on render (REMOVE LATER. NEW WORKOUT ON A NEW DAY)
+  useEffect(() => {
+    loadData();
+  }, []);
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>
         What exercises will you perform in today's workout?
       </Text>
-      <Text>{'\n'}Add to, delete from, reorder a list of exercises{'\n'}</Text>
+
+      {
+        exerciseList.map((exercise, index) => (
+          <Text key={index}>{exercise}</Text>
+        ))
+      }
 
       <TextInput
         value={exerciseName}
@@ -37,7 +80,7 @@ export default function WorkoutDiary({ navigation }) {
         style={styles.textBoxes}
       />
 
-      <Button title="Submit Data" onPress={create} />
+      <Button title="Submit Data" onPress={createAndLoad} />
 
       <Text>{'\n'}</Text>
 
