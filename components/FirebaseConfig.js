@@ -1,18 +1,17 @@
  // Import the functions you need from the SDKs you need
  import { initializeApp } from "firebase/app";
  import { getFirestore } from "firebase/firestore";
- import { FIREBASE_API_KEY, FIREBASE_AUTH_DOMAIN, FIREBASE_PROJECT_ID, FIREBASE_STORAGE_BUCKET, FIREBASE_MESSAGING_SENDER_ID, FIREBASE_APP_ID } from '@env';
  // TODO: Add SDKs for Firebase products that you want to use
  // https://firebase.google.com/docs/web/setup#available-libraries
  
  // Your web app's Firebase configuration
  const firebaseConfig = {
-  apiKey: FIREBASE_API_KEY,
-  authDomain: FIREBASE_AUTH_DOMAIN,
-  projectId: FIREBASE_PROJECT_ID,
-  storageBucket: FIREBASE_STORAGE_BUCKET,
-  messagingSenderId: FIREBASE_MESSAGING_SENDER_ID,
-  appId: FIREBASE_APP_ID,
+   apiKey: "REMOVED_FIREBASE_API_KEY",
+   authDomain: "REMOVED_FIREBASE_AUTH_DOMAIN",
+   projectId: "REMOVED_FIREBASE_PROJECT_ID",
+   storageBucket: "REMOVED_FIREBASE_PROJECT_ID.appspot.com",
+   messagingSenderId: "REMOVED_FIREBASE_MESSAGING_SENDER_ID",
+   appId: "1:REMOVED_FIREBASE_MESSAGING_SENDER_ID:web:6df86c6a08ad48ea9113d5"
  };
  
  // Initialize Firebase
