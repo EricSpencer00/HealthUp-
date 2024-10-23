@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, Button, StyleSheet, TextInput, FlatList, TouchableOpacity, Pressable } from 'react-native';
-import { getFirestore, collection, addDoc, getDocs , query, where } from 'firebase/firestore'; 
+import { getFirestore, collection, addDoc, getDocs , deleteDoc, doc } from 'firebase/firestore'; 
 import { initializeApp } from 'firebase/app';
 
 import app from './../FirebaseConfig';
@@ -51,6 +51,19 @@ export default function WorkoutDiary({ navigation }) {
     }
   }
 
+  // Firebase delete a document
+  async function deleteItem(item) {
+    try {
+      await deleteDoc(doc(db, "exercises", item.id));
+      console.log("Deleting: ", item.id)
+      
+    } catch (error) {
+      console.log("Error deleting: ", error)
+    } 
+  } 
+
+  // const res = await db.collection('cities').doc('DC').delete();
+
   // Wrapper for the two functions, so the button can run both
   async function createAndLoad() {
     try {
@@ -58,6 +71,15 @@ export default function WorkoutDiary({ navigation }) {
       loadData();
     } catch (error) {
       console.log("Error creating and loading data: ", error);
+    }
+  }
+
+  async function deleteAndLoad(item) {
+    try {
+      deleteItem(item);
+      loadData();
+    } catch (error) {
+      console.log("Error deleteing and loading data: ", error);
     }
   }
 
@@ -77,7 +99,7 @@ export default function WorkoutDiary({ navigation }) {
       <View style={styles.item}>
         <Text>{item.exercise}</Text>
       </View>
-      <TouchableOpacity style={styles.itemX} onPress={() => handlePressedItem(item)}>
+      <TouchableOpacity style={styles.itemX} onPress={() => deleteAndLoad(item)}>
         <Text>X</Text>
       </TouchableOpacity>
     </View>
