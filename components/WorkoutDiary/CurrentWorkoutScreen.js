@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, FlatList, TouchableOpacity } from 'react-native';
 import { getFirestore, getDocs, collection } from 'firebase/firestore';
 
+import { CountdownCircleTimer } from 'react-native-countdown-circle-timer';
+
 import app from './../FirebaseConfig';
 const db = getFirestore(app);
 let exerciseList = []
@@ -59,8 +61,6 @@ export default function CurrentWorkout({ navigation }) {
   // Add set button function
   async function addSet() {
     try {
-      // temp = currentExerciseSets;
-      // temp.push(0);
       setCurrentExerciseSets(
         [
           ...currentExerciseSets, 0,
@@ -94,12 +94,13 @@ export default function CurrentWorkout({ navigation }) {
 
   async function goToNextExercise() {
     try {
-      // Update exerciseList
-      exerciseList[currentExerciseIdx].sets = currentExerciseSets
-      setCurrentExerciseIdx(currentExerciseIdx + 1);
-      setCurrentExerciseName(exerciseList[currentExerciseIdx + 1]?.exercise);
-      setCurrentExerciseSets(exerciseList[currentExerciseIdx + 1]?.sets);
-
+      if (currentExerciseIdx < exerciseList.length - 1) {
+        // Update exerciseList
+        exerciseList[currentExerciseIdx].sets = currentExerciseSets
+        setCurrentExerciseIdx(currentExerciseIdx + 1);
+        setCurrentExerciseName(exerciseList[currentExerciseIdx + 1]?.exercise);
+        setCurrentExerciseSets(exerciseList[currentExerciseIdx + 1]?.sets);
+      }
     } catch (error) {
       console.log("Error going to next exercise: ", error);
     }
@@ -107,25 +108,51 @@ export default function CurrentWorkout({ navigation }) {
 
   async function goToPrevExercise() {
     try {
-      // Update exerciseList
-      exerciseList[currentExerciseIdx].sets = currentExerciseSets
-      setCurrentExerciseIdx(currentExerciseIdx - 1);
-      setCurrentExerciseName(exerciseList[currentExerciseIdx - 1]?.exercise);
-      setCurrentExerciseSets(exerciseList[currentExerciseIdx - 1]?.sets);
+      if (currentExerciseIdx > 0) {
+        // Update exerciseList
+        exerciseList[currentExerciseIdx].sets = currentExerciseSets
+        setCurrentExerciseIdx(currentExerciseIdx - 1);
+        setCurrentExerciseName(exerciseList[currentExerciseIdx - 1]?.exercise);
+        setCurrentExerciseSets(exerciseList[currentExerciseIdx - 1]?.sets);
+      }
     } catch (error) {
       console.log("Error going to next exercise: ", error);
     }
   }
   
+  const UrgeWithPleasureComponent = () => (
+    <CountdownCircleTimer
+      isPlaying
+      duration={7}
+      colors={['#004777', '#F7B801', '#A30000', '#A30000']}
+      colorsTime={[7, 5, 2, 0]}
+    >
+      {({ remainingTime }) => <Text>{remainingTime}</Text>}
+    </CountdownCircleTimer>
+  )
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>TODAY'S WORKOUT</Text>
+
+      {/* COUNTDOWN TIMER */}
+      <UrgeWithPleasureComponent />
+
       <View style={styles.horizontalRow}>
-        <TouchableOpacity style={styles.prevNextButtons} onPress={() => goToPrevExercise()}>
+        <TouchableOpacity 
+          style={
+            currentExerciseIdx == 0 ?
+            styles.prevNextButtonsEdge : styles.prevNextButtons
+          } 
+          onPress={() => goToPrevExercise()}>
           <Text>&lt;</Text>
         </TouchableOpacity>
-        <Text>{currentExerciseName}</Text>
-        <TouchableOpacity style={styles.prevNextButtons} onPress={() => goToNextExercise()}>
+        <Text style={styles.currentExercise}>{currentExerciseName}</Text>
+        <TouchableOpacity style={
+            currentExerciseIdx == exerciseList.length - 1 ?
+            styles.prevNextButtonsEdge : styles.prevNextButtons
+          }  
+          onPress={() => goToNextExercise()}>
           <Text>&gt;</Text>
         </TouchableOpacity>
       </View>
@@ -154,10 +181,12 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   flatListStyle: {
-    height: 100,
+    height: 150,
+    // alignItems: 'center',
   },
   item: {
     padding: 5,
+    alignItems: 'center',
   },
   newSetStyle: {
     backgroundColor: '#cff7b2',
@@ -176,8 +205,25 @@ const styles = StyleSheet.create({
     paddingVertical: 6,
     paddingHorizontal: 12,
     margin: 2,
+    width: 30,
+  },
+  prevNextButtonsEdge: {
+    backgroundColor: '#f0ffe6',
+    color: 'white',
+    borderRadius: 15,
+    fontSize: 17,
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    margin: 2,
+    width: 30,
   },
   horizontalRow: {
     flexDirection: 'row',
+  },
+  currentExercise: {
+    padding: 8,
+    width: '55%',
+    textAlign: 'center',
+    fontSize: 17,
   }
 });
