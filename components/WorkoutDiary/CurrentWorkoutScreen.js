@@ -84,8 +84,7 @@ export default function CurrentWorkout({ navigation }) {
   const renderItem = ({item, index})=>( 
     // style={styles.listRow}
     <View >
-      {/* style={styles.item} */}
-      <View >
+      <View style={styles.item}>
         <Text>Set {index + 1}: {item}</Text>
       </View>
     </View>
@@ -109,7 +108,7 @@ export default function CurrentWorkout({ navigation }) {
   async function goToPrevExercise() {
     try {
       // Update exerciseList
-      // exerciseList[currentExerciseIdx].sets = currentExerciseSets
+      exerciseList[currentExerciseIdx].sets = currentExerciseSets
       setCurrentExerciseIdx(currentExerciseIdx - 1);
       setCurrentExerciseName(exerciseList[currentExerciseIdx - 1]?.exercise);
       setCurrentExerciseSets(exerciseList[currentExerciseIdx - 1]?.sets);
@@ -156,6 +155,9 @@ const styles = StyleSheet.create({
   },
   flatListStyle: {
     height: 100,
+  },
+  item: {
+    padding: 5,
   },
   newSetStyle: {
     backgroundColor: '#cff7b2',
