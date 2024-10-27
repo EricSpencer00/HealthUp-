@@ -119,15 +119,36 @@ export default function CurrentWorkout({ navigation }) {
       console.log("Error going to next exercise: ", error);
     }
   }
-  
+
+  const [isPlaying, setIsPlaying] = useState(false);
+  function timerStartStop() {
+    setIsPlaying(!isPlaying);
+  }
+  const [key, setKey] = useState(0);
+  function timerReset() {
+    setKey(prevKey => prevKey + 1); // Change key to reset timer
+    setIsPlaying(false); // Stop the timer after reset
+  }
+
   const UrgeWithPleasureComponent = () => (
     <CountdownCircleTimer
-      isPlaying
-      duration={7}
+      key={key} // Add key to trigger a new instance of timer on reset
+      isPlaying={isPlaying}
+      duration={120}
       colors={['#004777', '#F7B801', '#A30000', '#A30000']}
       colorsTime={[7, 5, 2, 0]}
+      style={styles.padding}
     >
-      {({ remainingTime }) => <Text>{remainingTime}</Text>}
+      {({ remainingTime }) => 
+        <View style={styles.timerText}>
+          <Text>REST TIMER</Text>
+          <Text>{remainingTime}</Text>
+          <Text>seconds</Text>
+          <TouchableOpacity style={styles.newSetStyle} onPress={() => timerStartStop()}>
+            <Text>{isPlaying ? 'Reset' : 'Start'}</Text>
+          </TouchableOpacity>
+        </View>
+      }
     </CountdownCircleTimer>
   )
 
@@ -136,7 +157,10 @@ export default function CurrentWorkout({ navigation }) {
       <Text style={styles.title}>TODAY'S WORKOUT</Text>
 
       {/* COUNTDOWN TIMER */}
-      <UrgeWithPleasureComponent />
+      <View style={styles.timerWrapper}>
+        <UrgeWithPleasureComponent />
+      </View>
+      
 
       <View style={styles.horizontalRow}>
         <TouchableOpacity 
@@ -225,5 +249,15 @@ const styles = StyleSheet.create({
     width: '55%',
     textAlign: 'center',
     fontSize: 17,
+  },
+  timerText: {
+    display: 'flex',
+    justifyContent: 'center',
+    flexDirection: 'column',
+    alignItems: 'center',
+  },
+  timerWrapper: {
+    margin: 30,
+    // width: '70%',
   }
 });
