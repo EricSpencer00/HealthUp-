@@ -4,12 +4,13 @@ import { getFirestore, getDocs, collection } from 'firebase/firestore';
 
 import app from './../FirebaseConfig';
 const db = getFirestore(app);
+let exerciseList = []
 
 export default function CurrentWorkout({ navigation }) {
   
   // State to hold the exerciseList CHANGE THIS, WE WILL BE USING THIS TO STORE IT. HARD TO UPDATE THE SETS. 
   // const [exerciseList, setExerciseList] = useState([]);
-  let exerciseList = []
+  
 
   async function loadData() {
     // Try catch to handle the promise from getDocs
@@ -66,10 +67,6 @@ export default function CurrentWorkout({ navigation }) {
         ]
       );
       console.log("Set added!");
-      console.log("64: ", currentExerciseSets);
-      // setCurrentExerciseSets(temp);
-      console.log("66: ", currentExerciseSets);
-      console.log(currentExerciseName, "sets/reps: ", currentExerciseSets);
     } catch (error) {
       console.log("Error adding set: ", error);
     }
@@ -95,11 +92,45 @@ export default function CurrentWorkout({ navigation }) {
   );
 
   // Updating data in the FlatList: on num input change, on addSet
+
+  async function goToNextExercise() {
+    try {
+      // Update exerciseList
+      exerciseList[currentExerciseIdx].sets = currentExerciseSets
+      setCurrentExerciseIdx(currentExerciseIdx + 1);
+      setCurrentExerciseName(exerciseList[currentExerciseIdx + 1]?.exercise);
+      setCurrentExerciseSets(exerciseList[currentExerciseIdx + 1]?.sets);
+
+    } catch (error) {
+      console.log("Error going to next exercise: ", error);
+    }
+  }
+
+  async function goToPrevExercise() {
+    try {
+      // Update exerciseList
+      // exerciseList[currentExerciseIdx].sets = currentExerciseSets
+      setCurrentExerciseIdx(currentExerciseIdx - 1);
+      setCurrentExerciseName(exerciseList[currentExerciseIdx - 1]?.exercise);
+      setCurrentExerciseSets(exerciseList[currentExerciseIdx - 1]?.sets);
+    } catch (error) {
+      console.log("Error going to next exercise: ", error);
+    }
+  }
   
   return (
     <View style={styles.container}>
       <Text style={styles.title}>TODAY'S WORKOUT</Text>
-      <Text>{currentExerciseName}</Text>
+      <View style={styles.horizontalRow}>
+        <TouchableOpacity style={styles.prevNextButtons} onPress={() => goToPrevExercise()}>
+          <Text>&lt;</Text>
+        </TouchableOpacity>
+        <Text>{currentExerciseName}</Text>
+        <TouchableOpacity style={styles.prevNextButtons} onPress={() => goToNextExercise()}>
+          <Text>&gt;</Text>
+        </TouchableOpacity>
+      </View>
+      
       <View style={styles.flatListStyle}>
         <FlatList
           data={currentExerciseSets}
@@ -134,5 +165,17 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 10,
     paddingVertical: 7,
+  },
+  prevNextButtons: {
+    backgroundColor: '#cff7b2',
+    color: 'white',
+    borderRadius: 15,
+    fontSize: 17,
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    margin: 2,
+  },
+  horizontalRow: {
+    flexDirection: 'row',
   }
 });
