@@ -4,8 +4,8 @@ import { getFirestore, collection, addDoc, getDocs , deleteDoc, doc } from 'fire
 import { initializeApp } from 'firebase/app';
 
 import app from './../FirebaseConfig';
-import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
 const db = getFirestore(app);
+
 
 
 export default function WorkoutDiary({ navigation }) {
@@ -39,17 +39,24 @@ export default function WorkoutDiary({ navigation }) {
       querySnapshot.forEach((doc) => {
         newList.push({ 
           id: doc.id, 
-          exercise: doc.data()["exercise"]
+          exercise: doc.data()["exercise"],
+          sets: [0],
         })
           
         console.log("Adding: ", doc.id, " => ", doc.data());
       });
       setExerciseList(newList); 
+      console.log("48 EXERCISE LIST: ", exerciseList);
       console.log("Added exercises");
     } catch (error) {
       console.log("Error loading data: ", error);
     }
   }
+
+  // Load data on render (REMOVE LATER. NEW WORKOUT ON A NEW DAY)
+  useEffect(() => {
+    loadData();
+  }, []);
 
   // Firebase delete a document
   async function deleteItem(item) {
@@ -83,10 +90,7 @@ export default function WorkoutDiary({ navigation }) {
     }
   }
 
-  // Load data on render (REMOVE LATER. NEW WORKOUT ON A NEW DAY)
-  useEffect(() => {
-    loadData();
-  }, []);
+  
 
   // Function to access id of the clicked item
   const handlePressedItem = (item) => {
@@ -116,7 +120,9 @@ export default function WorkoutDiary({ navigation }) {
         data={exerciseList}
         renderItem={renderItem}
         keyExtractor={item => item.id}
-      />
+      />  
+
+      {/* <Text>{exerciseList[0].sets}</Text> */}
       
       <View style={styles.inputContainer}>
         <TextInput
