@@ -229,6 +229,6 @@ const styles = StyleSheet.create({
     margin: 10,
     width: '100%',
     alignSelf: 'center',
-    backgroundColor: '#92d5f0',
+    backgroundColor: '#55c6f2',
   },
 });

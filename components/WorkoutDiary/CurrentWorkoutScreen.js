@@ -74,8 +74,8 @@ export default function CurrentWorkout({ navigation }) {
 
   const addSetButton = ({}) => (
     <View>
-      <TouchableOpacity style={styles.newSetStyle} onPress={() => addSet()}>
-        <Text>Next set!</Text>
+      <TouchableOpacity onPress={() => addSet()}>
+        <Text style={styles.newSetStyle}>Next set!</Text>
       </TouchableOpacity>
     </View>
   );
@@ -124,31 +124,32 @@ export default function CurrentWorkout({ navigation }) {
   function timerStartStop() {
     setIsPlaying(!isPlaying);
   }
-  const [key, setKey] = useState(0);
-  function timerReset() {
-    setKey(prevKey => prevKey + 1); // Change key to reset timer
-    setIsPlaying(false); // Stop the timer after reset
-  }
 
   const UrgeWithPleasureComponent = () => (
     <CountdownCircleTimer
-      key={key} // Add key to trigger a new instance of timer on reset
       isPlaying={isPlaying}
       duration={120}
       colors={['#004777', '#F7B801', '#A30000', '#A30000']}
       colorsTime={[7, 5, 2, 0]}
       style={styles.padding}
+      size={300}
+      strokeWidth={15}
     >
-      {({ remainingTime }) => 
-        <View style={styles.timerText}>
-          <Text>REST TIMER</Text>
-          <Text>{remainingTime}</Text>
-          <Text>seconds</Text>
-          <TouchableOpacity style={styles.newSetStyle} onPress={() => timerStartStop()}>
-            <Text>{isPlaying ? 'Reset' : 'Start'}</Text>
-          </TouchableOpacity>
-        </View>
-      }
+      {({ remainingTime }) => {
+        const minutes = Math.floor(remainingTime / 60);
+        const seconds = remainingTime % 60;
+        return (
+          <View style={styles.timerText}>
+            <Text>REST TIMER</Text>
+            <Text style={{ fontSize: 40 }}>
+              {minutes}:{seconds.toString().padStart(2, '0')}
+            </Text>
+            <TouchableOpacity onPress={() => timerStartStop()}>
+              <Text style={styles.newSetStyle}>{isPlaying ? 'Reset' : 'Start'}</Text>
+            </TouchableOpacity>
+          </View>
+        );
+      }}
     </CountdownCircleTimer>
   )
 
@@ -163,21 +164,24 @@ export default function CurrentWorkout({ navigation }) {
       
 
       <View style={styles.horizontalRow}>
-        <TouchableOpacity 
-          style={
-            currentExerciseIdx == 0 ?
-            styles.prevNextButtonsEdge : styles.prevNextButtons
-          } 
-          onPress={() => goToPrevExercise()}>
-          <Text>&lt;</Text>
+        <TouchableOpacity onPress={() => goToPrevExercise()}>
+          <Text 
+            style={
+              currentExerciseIdx == 0 ?
+              styles.prevNextButtonsEdge : styles.prevNextButtons
+            } >
+              &lt;
+          </Text>
         </TouchableOpacity>
         <Text style={styles.currentExercise}>{currentExerciseName}</Text>
-        <TouchableOpacity style={
-            currentExerciseIdx == exerciseList.length - 1 ?
-            styles.prevNextButtonsEdge : styles.prevNextButtons
-          }  
-          onPress={() => goToNextExercise()}>
-          <Text>&gt;</Text>
+        <TouchableOpacity onPress={() => goToNextExercise()}>
+          <Text 
+            style={
+              currentExerciseIdx == exerciseList.length - 1 ?
+              styles.prevNextButtonsEdge : styles.prevNextButtons
+            } >
+              &gt;
+          </Text>
         </TouchableOpacity>
       </View>
       
@@ -213,7 +217,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   newSetStyle: {
-    backgroundColor: '#cff7b2',
+    backgroundColor: '#55c6f2',
     color: 'white',
     borderRadius: 15,
     justifyContent: 'center',
@@ -222,24 +226,24 @@ const styles = StyleSheet.create({
     paddingVertical: 7,
   },
   prevNextButtons: {
-    backgroundColor: '#cff7b2',
+    backgroundColor: '#55c6f2',
     color: 'white',
     borderRadius: 15,
-    fontSize: 17,
+    fontSize: 25,
     paddingVertical: 6,
     paddingHorizontal: 12,
     margin: 2,
-    width: 30,
+    width: 40,
   },
   prevNextButtonsEdge: {
-    backgroundColor: '#f0ffe6',
+    backgroundColor: '#a5ddf2',
     color: 'white',
     borderRadius: 15,
-    fontSize: 17,
+    fontSize: 25,
     paddingVertical: 6,
     paddingHorizontal: 12,
     margin: 2,
-    width: 30,
+    width: 40,
   },
   horizontalRow: {
     flexDirection: 'row',
