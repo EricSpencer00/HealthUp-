@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, TextInput } from 'react-native';
 import { getFirestore, getDocs, collection } from 'firebase/firestore';
 
 import { CountdownCircleTimer } from 'react-native-countdown-circle-timer';
 
 import app from './../FirebaseConfig';
+// import { TextInput } from 'react-native-gesture-handler';
 const db = getFirestore(app);
 let exerciseList = []
 
@@ -80,17 +81,26 @@ export default function CurrentWorkout({ navigation }) {
     </View>
   );
  
+  const [number, onChangeNumber] = useState('');
   // For FlatList. Renders each item with onPress, to trigger handlePressedItem on item
   const renderItem = ({item, index})=>( 
-    // style={styles.listRow}
-    <View >
-      <View style={styles.item}>
-        <Text>Set {index + 1}: {item}</Text>
+    <View style={styles.horizontalRowWrapper}>
+      <View style={styles.horizontalRow}>
+        {/* <Text style={styles.setText}>Set {index + 1}: {item}</Text> */}
+        <Text 
+          style={styles.setText}>Set {index + 1}:
+        </Text>
+        <TextInput 
+            style={styles.numInput}
+            // onChangeText={onChangeNumber}
+            // value={number}
+            placeholder="0"
+            keyboardType='numeric'
+            maxLength={2}
+        /> 
       </View>
     </View>
   );
-
-  // Updating data in the FlatList: on num input change, on addSet
 
   async function goToNextExercise() {
     try {
@@ -140,7 +150,7 @@ export default function CurrentWorkout({ navigation }) {
         const seconds = remainingTime % 60;
         return (
           <View style={styles.timerText}>
-            <Text>REST TIMER</Text>
+            <Text style={{ fontSize: 20 }}>REST TIMER</Text>
             <Text style={{ fontSize: 40 }}>
               {minutes}:{seconds.toString().padStart(2, '0')}
             </Text>
@@ -162,8 +172,10 @@ export default function CurrentWorkout({ navigation }) {
         <UrgeWithPleasureComponent />
       </View>
       
-
+      {/* EXERCISE PICKER */}
       <View style={styles.horizontalRow}>
+
+        {/* BUTTON TO GO TO PREV */}
         <TouchableOpacity onPress={() => goToPrevExercise()}>
           <Text 
             style={
@@ -173,7 +185,11 @@ export default function CurrentWorkout({ navigation }) {
               &lt;
           </Text>
         </TouchableOpacity>
+
+        {/* CURRENT EXERCISE TEXT */}
         <Text style={styles.currentExercise}>{currentExerciseName}</Text>
+
+        {/* BUTTON TO GO TO NEXT */}
         <TouchableOpacity onPress={() => goToNextExercise()}>
           <Text 
             style={
@@ -185,6 +201,7 @@ export default function CurrentWorkout({ navigation }) {
         </TouchableOpacity>
       </View>
       
+      {/* LIST OF SETS */}
       <View style={styles.flatListStyle}>
         <FlatList
           data={currentExerciseSets}
@@ -210,11 +227,12 @@ const styles = StyleSheet.create({
   },
   flatListStyle: {
     height: 150,
-    // alignItems: 'center',
   },
-  item: {
-    padding: 5,
+  setText: {
+    padding: 0,
+    margin: 0,
     alignItems: 'center',
+    fontSize: 17,
   },
   newSetStyle: {
     backgroundColor: '#55c6f2',
@@ -222,8 +240,10 @@ const styles = StyleSheet.create({
     borderRadius: 15,
     justifyContent: 'center',
     alignItems: 'center',
+    alignSelf: 'center',
     padding: 10,
     paddingVertical: 7,
+    fontSize: 15,
   },
   prevNextButtons: {
     backgroundColor: '#55c6f2',
@@ -234,6 +254,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     margin: 2,
     width: 40,
+    bottom: 20,
   },
   prevNextButtonsEdge: {
     backgroundColor: '#a5ddf2',
@@ -244,24 +265,49 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     margin: 2,
     width: 40,
+    bottom: 20,
   },
   horizontalRow: {
     flexDirection: 'row',
+    alignItems: 'center',
+    // margin: 5,
+    padding: 0,
+  },
+  horizontalRowWrapper: {
+    marginBottom: 7,
+    padding: 0,
   },
   currentExercise: {
-    padding: 8,
+    padding: 0,
     width: '55%',
     textAlign: 'center',
-    fontSize: 17,
+    fontSize: 30,
+    // backgroundColor: '#e6fcec',
+    height: 90,
+    flexWrap: 'wrap',
+    alignItems: 'center',
+    justifyContent: 'center',
+    alignSelf: 'center',
+    
   },
   timerText: {
     display: 'flex',
     justifyContent: 'center',
     flexDirection: 'column',
     alignItems: 'center',
+    // fontSize: 300,
   },
   timerWrapper: {
     margin: 30,
-    // width: '70%',
+  },
+  numInput: {
+    height: 40,
+    marginVertical: 0,
+    marginHorizontal: 5,
+    borderWidth: 1,
+    paddingHorizontal: 8,
+    paddingVertical: 0,
+    fontSize: 17,
+    borderRadius: 7,
   }
 });
