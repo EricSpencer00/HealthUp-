@@ -1,8 +1,6 @@
 const muscles = [
     { name: 'Chest', apiName: 'chest' },
     { name: 'Back', apiName: 'back' },
-    { name: 'Arms', apiName: 'arms' },
-    { name: 'Legs', apiName: 'legs' },
     { name: 'Abductors', apiName: 'abductors' },
     { name: 'Abs', apiName: 'abs' },
     { name: 'Adductors', apiName: 'adductors' },

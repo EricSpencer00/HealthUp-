@@ -40,8 +40,10 @@ export default function FitnessScreen() {
 
         const filteredExercises = data.filter((exercise) => {
           console.log(`Comparing ${exercise.target.toLowerCase()} with ${muscle.apiName.toLowerCase()}`);
-          return exercise.bodyPart.toLowerCase() === muscle.apiName.toLowerCase();  // Case-insensitive comparison
-        })
+          return (
+            exercise.bodyPart.toLowerCase() === muscle.apiName.toLowerCase() || 
+            exercise.target.toLowerCase() === muscle.apiName.toLowerCase()
+        );})
         console.log('Filtered exercises:', filteredExercises);  // Log filtered data
         setExercises(filteredExercises);
       } catch (error) {
