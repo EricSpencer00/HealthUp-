@@ -1,7 +1,9 @@
-import React from 'react';
+import React, { useEffect, useContext } from 'react';
+import { getAuth } from './firebase/auth';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { View, Text, Button, StyleSheet } from 'react-native';
+import { UserContext } from './components/UserContext';
 // import { EventTypes } from 'react-native-gesture-handler/lib/typescript/web/interfaces';
 
 // Moved components into own folder, import them here to be used in App

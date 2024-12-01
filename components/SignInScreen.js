@@ -1,15 +1,18 @@
 // SignInScreen.js
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { View, TextInput, Button, Text, StyleSheet, Alert } from 'react-native';
 import { signInUser, signUpUser } from '../firebase/auth'; // Import Firebase auth functions
 import { useNavigation } from '@react-navigation/native';
+import { UserContext } from './UserContext';
 
 export default function SignInScreen() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [userName, setUserName] = useState('');
   const [isSignUp, setIsSignUp] = useState(false);
+
   const navigation = useNavigation();
+  const { setUserId } = useContext(UserContext);
 
   const handleAuth = async () => {
     try {
@@ -19,6 +22,7 @@ export default function SignInScreen() {
       } else {
         userId = await signInUser(email, password);
       }
+      setUserId(userId);
       Alert.alert("Success", "Welcome!");
       navigation.replace("Home");
     } catch (error) {

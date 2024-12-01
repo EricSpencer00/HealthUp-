@@ -68,3 +68,5 @@ export const getUserData = async (userId) => {
     throw error;
   }
 };
+
+export { getAuth };

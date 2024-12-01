@@ -1,16 +1,21 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { View, Text, FlatList, StyleSheet, ActivityIndicator, Image, TouchableOpacity } from 'react-native';
 import muscles from './Muscles/Muscles'; // Import the muscles list
-// import { Picker } from '@react-native-picker/picker';
+// import firebase from 'firebase/compat/app';
+// import 'firebase/compat/firestore';
+// import { firestore } from '../firebase/'; // Import Firestore
+// import { getUserProfile } from '../firebase/firebaseFunctions'; // Import the Auth
+import { UserContext } from './UserContext';
 
-// Replace this with your ExerciseDB API key
-const API_KEY = 'YOUR_API_KEY';
 const API_URL = 'https://exercisedb.p.rapidapi.com/exercises?limit=200&name=';
 
+// pass userId to FitnessScreen but null if it does not get passed
 export default function FitnessScreen() {
   const [exercises, setExercises] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedMuscle, setSelectedMuscle] = useState('chest'); // Default muscle
+  const { userId } = useContext(UserContext);
+  console.log(userId);
 
   // Find the selected muscle object from the muscles list
   const muscle = muscles.find(m => m.apiName === selectedMuscle);
@@ -41,6 +46,24 @@ export default function FitnessScreen() {
   }, [muscle]);
 
   if (loading) return <ActivityIndicator size="large" color="#ffffff" />;
+
+  const saveExercise = async (exercise) => { // only show if there is a user logged in
+    if (!userId) {
+      console.error('User not logged in');
+      return;
+    }
+    try {
+      await db
+        .collection('users')
+        .doc(userId)
+        .collection('exercises')
+        .add(exercise);
+      console.log('Exercise saved:', exercise);
+    } catch (error) {
+      console.error('Failed to save exercise:', error);
+      Alert.alert('Failed to save exercise');
+    }
+  }
 
   // Instructions component for splitting and showing more/less text
   const Instructions = ({ instructions }) => {
@@ -103,6 +126,13 @@ export default function FitnessScreen() {
               <Image source={{ uri: item.gifUrl }} style={styles.gif} />
             ) : (
               <Text>No GIF available</Text>
+            )}
+
+            {/* Save exercise Button only if there is user logged in */}
+            {userId && (
+              <TouchableOpacity onPress={() => saveExercise(item)}>
+                <Text style={styles.moreText}>Save Exercise</Text>
+              </TouchableOpacity>
             )}
           </View>
         )}

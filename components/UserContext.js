@@ -11,6 +11,7 @@ export const UserProvider = ({ children }) => {
   const [weight, setWeight] = useState('');
   const [favoriteFoods, setFavoriteFoods] = useState('');
   const [nutritionJournal, setNutritionJournal] = useState([]);
+  const [userId, setUserId] = useState(null);
 
   // Function to add a food entry to the journal
   const addFoodToJournal = (food) => {
@@ -61,10 +62,12 @@ export const UserProvider = ({ children }) => {
   return (
     <UserContext.Provider
       value={{
+        userId,
         userName,
         weight,
         favoriteFoods,
         nutritionJournal,
+        setUserId,
         addFoodToJournal,
         getDailyData,
         getWeeklyData,
