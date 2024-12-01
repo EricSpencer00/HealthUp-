@@ -1,11 +1,12 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { View, Text, FlatList, StyleSheet, ActivityIndicator, Image, TouchableOpacity } from 'react-native';
+import { View, Text, FlatList, StyleSheet, ActivityIndicator, Image, TouchableOpacity, Alert } from 'react-native';
 import muscles from './Muscles/Muscles'; // Import the muscles list
 // import firebase from 'firebase/compat/app';
 // import 'firebase/compat/firestore';
 // import { firestore } from '../firebase/'; // Import Firestore
 // import { getUserProfile } from '../firebase/firebaseFunctions'; // Import the Auth
 import { UserContext } from './UserContext';
+import { saveExercise } from '../firebase/firebaseFunctions';
 
 const API_URL = 'https://exercisedb.p.rapidapi.com/exercises?limit=200&name=';
 
@@ -15,7 +16,7 @@ export default function FitnessScreen() {
   const [loading, setLoading] = useState(true);
   const [selectedMuscle, setSelectedMuscle] = useState('chest'); // Default muscle
   const { userId } = useContext(UserContext);
-  console.log(userId);
+  console.log(userId); // TESTING
 
   // Find the selected muscle object from the muscles list
   const muscle = muscles.find(m => m.apiName === selectedMuscle);
@@ -47,18 +48,13 @@ export default function FitnessScreen() {
 
   if (loading) return <ActivityIndicator size="large" color="#ffffff" />;
 
-  const saveExercise = async (exercise) => { // only show if there is a user logged in
+  const handleSaveExercise = async (exercise) => { // only show if there is a user logged in
     if (!userId) {
       console.error('User not logged in');
       return;
     }
     try {
-      await db
-        .collection('users')
-        .doc(userId)
-        .collection('exercises')
-        .add(exercise);
-      console.log('Exercise saved:', exercise);
+      await saveExercise(userId, exercise);
     } catch (error) {
       console.error('Failed to save exercise:', error);
       Alert.alert('Failed to save exercise');
@@ -130,7 +126,7 @@ export default function FitnessScreen() {
 
             {/* Save exercise Button only if there is user logged in */}
             {userId && (
-              <TouchableOpacity onPress={() => saveExercise(item)}>
+              <TouchableOpacity onPress={() => handleSaveExercise(item)}>
                 <Text style={styles.moreText}>Save Exercise</Text>
               </TouchableOpacity>
             )}

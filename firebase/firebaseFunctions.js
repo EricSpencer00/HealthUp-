@@ -1,4 +1,6 @@
 import { firestore } from './firebaseConfig';
+import { db } from './firebaseConfig';
+import { getFirestore, collection, getDocs, addDoc } from 'firebase/firestore';
 
 /**
  * Fetch the user's profile data.
@@ -81,6 +83,51 @@ export const getWorkoutHistory = async (userId) => {
   } catch (error) {
     console.error("Error fetching workout history:", error);
     return [];
+  }
+};
+
+export const saveExercise = async (userId, exerciseName) => {
+  try {
+    const exerciseRef = collection(db, 'users', userId, 'exercises');
+    await addDoc(exerciseRef, {
+      name: exerciseName,
+      addedAt: new Date(),
+    });
+    console.log('Exercise saved successfully');
+  } catch (error) {
+    console.error('Error saving exercise:', error.message);
+    throw error;
+  }
+};
+
+export const getSavedExercises = async (userId) => {
+  try {
+    const snapshot = await db
+      .collection('users')
+      .doc(userId)
+      .collection('savedExercises')
+      .get();
+
+    return snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+  } catch (error) {
+    console.error('Error fetching saved exercises:', error.message);
+    throw error;
+  }
+};
+
+export const deleteExercise = async (userId, exerciseId) => {
+  try {
+    const exerciseDoc = db
+      .collection('users')
+      .doc(userId)
+      .collection('savedExercises')
+      .doc(exerciseId);
+
+    await exerciseDoc.delete();
+    console.log('Exercise deleted successfully');
+  } catch (error) {
+    console.error('Error deleting exercise:', error.message);
+    throw error;
   }
 };
 
