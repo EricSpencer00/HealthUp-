@@ -1,5 +1,5 @@
 import { firestore } from './firebase'; // Firebase configuration
-import { getCurrentDate } from './utils'; // Helper function for date formatting
+// import { getCurrentDate } from './utils'; // Helper function for date formatting
 
 const createUserObject = ({
   userName,
