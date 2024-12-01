@@ -5,135 +5,51 @@ import { getFirestore, getDocs, collection } from 'firebase/firestore';
 import { CountdownCircleTimer } from 'react-native-countdown-circle-timer';
 
 import app from '../../firebase/firebaseConfig';
-// import { TextInput } from 'react-native-gesture-handler';
-const db = getFirestore(app);
-let exerciseList = []
+export default function CurrentWorkoutScreen({ route }) {
+  const { exercises } = route.params || {}; // Fallback to empty object if undefined
 
-export default function CurrentWorkout({ navigation }) {
-  
-  // State to hold the exerciseList CHANGE THIS, WE WILL BE USING THIS TO STORE IT. HARD TO UPDATE THE SETS. 
-  // const [exerciseList, setExerciseList] = useState([]);
-  
+  // Set default value for exerciseList if it's undefined
+  const [exerciseList, setExerciseList] = useState(exercises || []);
 
-  async function loadData() {
-    // Try catch to handle the promise from getDocs
-    try {
-      // Getdocs returns a promise, handle with 'await'
-      const querySnapshot = await getDocs(collection(db, "exercises"))
-      // Avoiding mutating the array state
-      const newList = []
-      // Arrow function in JS
-      querySnapshot.forEach((doc) => {
-        newList.push({ 
-          id: doc.id, 
-          exercise: doc.data()["exercise"],
-          sets: [0],
-        })
-          
-        console.log("Adding: ", doc.id, " => ", doc.data());
-      });
-      exerciseList = newList;
-      setCurrentExerciseSets(exerciseList[currentExerciseIdx]?.sets);
-      setCurrentExerciseName(exerciseList[currentExerciseIdx]?.exercise);
-      console.log("Added exercises");
-    } catch (error) {
-      console.log("Error loading data: ", error);
-    }
-  }
-
-  // Load data on render (REMOVE LATER. NEW WORKOUT ON A NEW DAY)
-  useEffect(() => {
-    loadData();
-  }, []);  
-
-  // Initialize currentExerciseIdx state
   const [currentExerciseIdx, setCurrentExerciseIdx] = useState(0);
-
-  // State to keep current sets/reps list.
-  // Separate from bigger array of objects.
-  // First update the state. Later, update the object array.
-  // Update object array when going to prev/next exercise
-
-  // Need to have state for the current sets list
-  const [currentExerciseSets, setCurrentExerciseSets] = useState([]);
-  // State for current exercise name
-  const [currentExerciseName, setCurrentExerciseName] = useState([]);
-
-  // Add set button function
-  async function addSet() {
-    try {
-      setCurrentExerciseSets(
-        [
-          ...currentExerciseSets, 0,
-        ]
-      );
-      console.log("Set added!");
-    } catch (error) {
-      console.log("Error adding set: ", error);
-    }
-  } 
-
-  const addSetButton = ({}) => (
-    <View>
-      <TouchableOpacity onPress={() => addSet()}>
-        <Text style={styles.newSetStyle}>Next set!</Text>
-      </TouchableOpacity>
-    </View>
+  const [currentExerciseSets, setCurrentExerciseSets] = useState(
+    (exerciseList[0] && exerciseList[0].sets) || [] // Fallback to empty array if first exercise has no sets
   );
- 
-  const [number, onChangeNumber] = useState('');
-  // For FlatList. Renders each item with onPress, to trigger handlePressedItem on item
-  const renderItem = ({item, index})=>( 
-    <View style={styles.horizontalRowWrapper}>
-      <View style={styles.horizontalRow}>
-        {/* <Text style={styles.setText}>Set {index + 1}: {item}</Text> */}
-        <Text 
-          style={styles.setText}>Set {index + 1}:
-        </Text>
-        <TextInput 
-            style={styles.numInput}
-            // onChangeText={onChangeNumber}
-            // value={number}
-            placeholder="0"
-            keyboardType='numeric'
-            maxLength={2}
-        /> 
-      </View>
-    </View>
+  const [currentExerciseName, setCurrentExerciseName] = useState(
+    (exerciseList[0] && exerciseList[0].exercise) || '' // Fallback to empty string if first exercise has no name
   );
-
-  async function goToNextExercise() {
-    try {
-      if (currentExerciseIdx < exerciseList.length - 1) {
-        // Update exerciseList
-        exerciseList[currentExerciseIdx].sets = currentExerciseSets
-        setCurrentExerciseIdx(currentExerciseIdx + 1);
-        setCurrentExerciseName(exerciseList[currentExerciseIdx + 1]?.exercise);
-        setCurrentExerciseSets(exerciseList[currentExerciseIdx + 1]?.sets);
-      }
-    } catch (error) {
-      console.log("Error going to next exercise: ", error);
-    }
-  }
-
-  async function goToPrevExercise() {
-    try {
-      if (currentExerciseIdx > 0) {
-        // Update exerciseList
-        exerciseList[currentExerciseIdx].sets = currentExerciseSets
-        setCurrentExerciseIdx(currentExerciseIdx - 1);
-        setCurrentExerciseName(exerciseList[currentExerciseIdx - 1]?.exercise);
-        setCurrentExerciseSets(exerciseList[currentExerciseIdx - 1]?.sets);
-      }
-    } catch (error) {
-      console.log("Error going to next exercise: ", error);
-    }
-  }
-
   const [isPlaying, setIsPlaying] = useState(false);
-  function timerStartStop() {
+
+  useEffect(() => {
+    if (exerciseList.length > 0) {
+      setCurrentExerciseSets(exerciseList[0]?.sets);
+      setCurrentExerciseName(exerciseList[0]?.exercise);
+    }
+  }, [exerciseList]);
+
+  const addSet = () => {
+    setCurrentExerciseSets([...currentExerciseSets, 0]);
+  };
+
+  const goToNextExercise = () => {
+    if (currentExerciseIdx < exerciseList.length - 1) {
+      setCurrentExerciseIdx(currentExerciseIdx + 1);
+      setCurrentExerciseName(exerciseList[currentExerciseIdx + 1]?.exercise);
+      setCurrentExerciseSets(exerciseList[currentExerciseIdx + 1]?.sets);
+    }
+  };
+
+  const goToPrevExercise = () => {
+    if (currentExerciseIdx > 0) {
+      setCurrentExerciseIdx(currentExerciseIdx - 1);
+      setCurrentExerciseName(exerciseList[currentExerciseIdx - 1]?.exercise);
+      setCurrentExerciseSets(exerciseList[currentExerciseIdx - 1]?.sets);
+    }
+  };
+
+  const timerStartStop = () => {
     setIsPlaying(!isPlaying);
-  }
+  };
 
   const UrgeWithPleasureComponent = () => (
     <CountdownCircleTimer
@@ -154,14 +70,28 @@ export default function CurrentWorkout({ navigation }) {
             <Text style={{ fontSize: 40 }}>
               {minutes}:{seconds.toString().padStart(2, '0')}
             </Text>
-            <TouchableOpacity onPress={() => timerStartStop()}>
+            <TouchableOpacity onPress={timerStartStop}>
               <Text style={styles.newSetStyle}>{isPlaying ? 'Reset' : 'Start'}</Text>
             </TouchableOpacity>
           </View>
         );
       }}
     </CountdownCircleTimer>
-  )
+  );
+
+  const renderItem = ({ item, index }) => (
+    <View style={styles.horizontalRowWrapper}>
+      <View style={styles.horizontalRow}>
+        <Text style={styles.setText}>Set {index + 1}:</Text>
+        <TextInput
+          style={styles.numInput}
+          placeholder="0"
+          keyboardType="numeric"
+          maxLength={2}
+        />
+      </View>
+    </View>
+  );
 
   return (
     <View style={styles.container}>
@@ -171,18 +101,13 @@ export default function CurrentWorkout({ navigation }) {
       <View style={styles.timerWrapper}>
         <UrgeWithPleasureComponent />
       </View>
-      
+
       {/* EXERCISE PICKER */}
       <View style={styles.horizontalRow}>
-
         {/* BUTTON TO GO TO PREV */}
-        <TouchableOpacity onPress={() => goToPrevExercise()}>
-          <Text 
-            style={
-              currentExerciseIdx == 0 ?
-              styles.prevNextButtonsEdge : styles.prevNextButtons
-            } >
-              &lt;
+        <TouchableOpacity onPress={goToPrevExercise}>
+          <Text style={currentExerciseIdx === 0 ? styles.prevNextButtonsEdge : styles.prevNextButtons}>
+            &lt;
           </Text>
         </TouchableOpacity>
 
@@ -190,30 +115,25 @@ export default function CurrentWorkout({ navigation }) {
         <Text style={styles.currentExercise}>{currentExerciseName}</Text>
 
         {/* BUTTON TO GO TO NEXT */}
-        <TouchableOpacity onPress={() => goToNextExercise()}>
-          <Text 
-            style={
-              currentExerciseIdx == exerciseList.length - 1 ?
-              styles.prevNextButtonsEdge : styles.prevNextButtons
-            } >
-              &gt;
+        <TouchableOpacity onPress={goToNextExercise}>
+          <Text style={currentExerciseIdx === exerciseList.length - 1 ? styles.prevNextButtonsEdge : styles.prevNextButtons}>
+            &gt;
           </Text>
         </TouchableOpacity>
       </View>
-      
+
       {/* LIST OF SETS */}
       <View style={styles.flatListStyle}>
         <FlatList
           data={currentExerciseSets}
           renderItem={renderItem}
-          ListFooterComponent={addSetButton}
+          ListFooterComponent={<TouchableOpacity onPress={addSet}><Text style={styles.newSetStyle}>Next set!</Text></TouchableOpacity>}
         />
       </View>
     </View>
   );
 }
 
-// Styles
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -270,8 +190,6 @@ const styles = StyleSheet.create({
   horizontalRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    // margin: 5,
-    padding: 0,
   },
   horizontalRowWrapper: {
     marginBottom: 7,
@@ -282,20 +200,17 @@ const styles = StyleSheet.create({
     width: '55%',
     textAlign: 'center',
     fontSize: 30,
-    // backgroundColor: '#e6fcec',
     height: 90,
     flexWrap: 'wrap',
     alignItems: 'center',
     justifyContent: 'center',
     alignSelf: 'center',
-    
   },
   timerText: {
     display: 'flex',
     justifyContent: 'center',
     flexDirection: 'column',
     alignItems: 'center',
-    // fontSize: 300,
   },
   timerWrapper: {
     margin: 30,

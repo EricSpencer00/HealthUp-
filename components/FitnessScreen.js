@@ -1,10 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { View, Text, FlatList, StyleSheet, ActivityIndicator, Image, TouchableOpacity, Alert, ScrollView } from 'react-native';
 import muscles from './Muscles/Muscles'; // Import the muscles list
-// import firebase from 'firebase/compat/app';
-// import 'firebase/compat/firestore';
-// import { firestore } from '../firebase/'; // Import Firestore
-// import { getUserProfile } from '../firebase/firebaseFunctions'; // Import the Auth
 import { UserContext } from './UserContext';
 import { saveExercise } from '../firebase/firebaseFunctions';
 
@@ -36,9 +32,17 @@ export default function FitnessScreen() {
         console.log(response);
         const data = await response.json();
         console.log(data);
-        const filteredExercises = data.filter(exercise => 
-          exercise.target.toLowerCase() === muscle.apiName.toLowerCase()
-        );
+
+        console.log('Selected muscle:', muscle.apiName);
+        console.log('Exercise targets from API:');
+        data.forEach(exercise => console.log(exercise.bodyPart));  // Log all targets
+
+
+        const filteredExercises = data.filter((exercise) => {
+          console.log(`Comparing ${exercise.target.toLowerCase()} with ${muscle.apiName.toLowerCase()}`);
+          return exercise.bodyPart.toLowerCase() === muscle.apiName.toLowerCase();  // Case-insensitive comparison
+        })
+        console.log('Filtered exercises:', filteredExercises);  // Log filtered data
         setExercises(filteredExercises);
       } catch (error) {
         console.error("Failed to fetch exercises:", error);
@@ -59,6 +63,7 @@ export default function FitnessScreen() {
     }
     try {
       await saveExercise(userId, exercise);
+      Alert.alert('Exercise saved successfully');
     } catch (error) {
       console.error('Failed to save exercise:', error);
       Alert.alert('Failed to save exercise');
@@ -92,7 +97,6 @@ export default function FitnessScreen() {
     );
   };  
   
-
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Exercises for {muscle.name}</Text>
@@ -104,7 +108,6 @@ export default function FitnessScreen() {
         labelKey="name"
         valueKey="apiName"
       />
-
 
       <FlatList
         data={exercises}
@@ -211,7 +214,6 @@ const dropdownStyles = StyleSheet.create({
   },
 });
 
-
 // Styles
 const styles = StyleSheet.create({
   container: {
@@ -260,6 +262,6 @@ const styles = StyleSheet.create({
     width: '100%',
     height: 200,
     marginTop: 10,
-    resizeMode: 'contain',
+    borderRadius: 8,
   },
 });

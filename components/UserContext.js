@@ -1,4 +1,5 @@
-import React, { createContext, useState } from 'react';
+import React, { createContext, useState, useEffect } from 'react';
+import firebase from '../firebase/firebaseConfig';
 
 // Helper function to get the current date
 const getCurrentDate = () => new Date().toISOString().split('T')[0]; // YYYY-MM-DD format
@@ -11,12 +12,38 @@ export const UserProvider = ({ children }) => {
   const [weight, setWeight] = useState('');
   const [favoriteFoods, setFavoriteFoods] = useState('');
   const [nutritionJournal, setNutritionJournal] = useState([]);
+  const [completedWorkouts, setCompletedWorkouts] = useState([]);
   const [userId, setUserId] = useState(null);
 
+  // Function to set the current user's id (retrieved from Firebase Authentication)
+  const setUser = (id) => setUserId(id);
+
+  // Function to fetch nutrition journal from Firebase
+  const fetchNutritionJournal = async () => {
+    const snapshot = await firebase.firestore().collection('nutritionJournal').where('userId', '==', userId).get();
+    const journalData = snapshot.docs.map(doc => doc.data());
+    setNutritionJournal(journalData);
+  };
+
+  // Function to fetch completed workouts from Firebase
+  const fetchCompletedWorkouts = async () => {
+    const snapshot = await firebase.firestore().collection('completedWorkouts').where('userId', '==', userId).get();
+    const workoutsData = snapshot.docs.map(doc => doc.data());
+    setCompletedWorkouts(workoutsData);
+  };
+
   // Function to add a food entry to the journal
-  const addFoodToJournal = (food) => {
-    const foodWithDate = { ...food, date: getCurrentDate() }; // Add the current date to the food entry
-    setNutritionJournal((prevJournal) => [...prevJournal, foodWithDate]);
+  const addFoodToJournal = async (food) => {
+    const foodWithDate = { ...food, date: getCurrentDate(), userId };
+    await firebase.firestore().collection('nutritionJournal').add(foodWithDate);
+    fetchNutritionJournal(); // Refresh the journal
+  };
+
+  // Function to add a completed workout
+  const addCompletedWorkout = async (workout) => {
+    const workoutWithDate = { ...workout, date: getCurrentDate(), userId };
+    await firebase.firestore().collection('completedWorkouts').add(workoutWithDate);
+    fetchCompletedWorkouts(); // Refresh the workout list
   };
 
   // Helper function to calculate the total nutrition for a given list of foods
@@ -59,6 +86,14 @@ export const UserProvider = ({ children }) => {
     return calculateNutrition(monthlyEntries);
   };
 
+  // Fetch user data when the user ID is set
+  useEffect(() => {
+    if (userId) {
+      fetchNutritionJournal();
+      fetchCompletedWorkouts();
+    }
+  }, [userId]);
+
   return (
     <UserContext.Provider
       value={{
@@ -67,11 +102,13 @@ export const UserProvider = ({ children }) => {
         weight,
         favoriteFoods,
         nutritionJournal,
-        setUserId,
+        completedWorkouts,
+        setUserId: setUser,
         addFoodToJournal,
         getDailyData,
         getWeeklyData,
         getMonthlyData,
+        addCompletedWorkout,
       }}
     >
       {children}

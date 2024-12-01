@@ -1,24 +1,30 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, Button, StyleSheet, TextInput, FlatList, TouchableOpacity, Pressable } from 'react-native';
-import { getFirestore, collection, addDoc, getDocs , deleteDoc, doc } from 'firebase/firestore'; 
-import { initializeApp } from 'firebase/app';
+import React, { useState, useEffect, useContext } from 'react';
+import { View, Text, StyleSheet, TextInput, FlatList, TouchableOpacity } from 'react-native';
+import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc } from 'firebase/firestore'; 
+import { UserContext } from '../UserContext';
+import { db } from '../../firebase/firebaseConfig';
 
-import app from '../../firebase/firebaseConfig';
-const db = getFirestore(app);
-
-
+// Default exercises when no user is logged in
+const defaultExercises = [
+  { id: '1', exercise: 'Push-up', sets: [0] },
+  { id: '2', exercise: 'Squat', sets: [0] },
+  { id: '3', exercise: 'Plank', sets: [0] },
+  { id: '4', exercise: 'Lunges', sets: [0] },
+  { id: '5', exercise: 'Burpees', sets: [0] },
+];
 
 export default function WorkoutDiary({ navigation }) {
   const [exerciseName, setExerciseName] = useState('');
+  const { userId } = useContext(UserContext); // Get userId from context
 
-  // Function to create a new document in Firestore
+  // Function to create a new exercise in Firestore
   async function create() {
     try {
-      // Add a new document to the 'exercises' collection
-      await addDoc(collection(db, "exercises"), {
+      // Add a new document to the 'exercises' collection for the current user
+      await addDoc(collection(db, "users", userId, "exercises"), {
         exercise: exerciseName,
       });
-      console.log('Document successfully written!');
+      console.log('Exercise successfully added!');
       setExerciseName(''); // Clear the input field after submitting
     } catch (error) {
       console.error('Error writing document: ', error);
@@ -29,76 +35,70 @@ export default function WorkoutDiary({ navigation }) {
   const [exerciseList, setExerciseList] = useState([]);
 
   async function loadData() {
-    // Try catch to handle the promise from getDocs
     try {
-      // Getdocs returns a promise, handle with 'await'
-      const querySnapshot = await getDocs(collection(db, "exercises"))
-      // Avoiding mutating the array state
-      const newList = []
-      // Arrow function in JS
-      querySnapshot.forEach((doc) => {
-        newList.push({ 
-          id: doc.id, 
-          exercise: doc.data()["exercise"],
-          sets: [0],
-        })
-          
-        console.log("Adding: ", doc.id, " => ", doc.data());
-      });
-      setExerciseList(newList); 
-      console.log("48 EXERCISE LIST: ", exerciseList);
-      console.log("Added exercises");
+      if (userId) {
+        // Fetch exercises from the current user's exercises collection
+        const querySnapshot = await getDocs(collection(db, 'users', userId, 'exercises'));
+        const newList = [];
+        querySnapshot.forEach((doc) => {
+          const data = doc.data();
+          // Extract the correct fields
+          newList.push({ 
+            id: doc.id, 
+            exercise: data.exercise,  // Accessing the nested name field
+            sets: [0],  // Placeholder for sets, modify as needed
+          });
+          console.log("Adding exercise: ", doc.id, " => ", data);
+        });
+        setExerciseList(newList);
+      } else {
+        // If no user is logged in, use default exercises
+        setExerciseList(defaultExercises);
+        console.log("Loading default exercises.");
+      }
     } catch (error) {
       console.log("Error loading data: ", error);
     }
   }
 
-  // Load data on render (REMOVE LATER. NEW WORKOUT ON A NEW DAY)
+  // Load data when component mounts
   useEffect(() => {
     loadData();
-  }, []);
+  }, [userId]); // Re-load data if userId changes
 
-  // Firebase delete a document
+  // Function to delete an exercise
   async function deleteItem(item) {
     try {
-      await deleteDoc(doc(db, "exercises", item.id));
-      console.log("Deleting: ", item.id)
-      
+      await deleteDoc(doc(db, "users", userId, "exercises", item.id));
+      console.log("Deleted exercise: ", item.id);
+      loadData();  // Reload the exercise list after deletion
     } catch (error) {
-      console.log("Error deleting: ", error)
-    } 
-  } 
+      console.log("Error deleting exercise: ", error);
+    }
+  }
 
-  // const res = await db.collection('cities').doc('DC').delete();
-
-  // Wrapper for the two functions, so the button can run both
+  // Wrapper function for creating and loading data
   async function createAndLoad() {
     try {
-      create();
+      await create();
       loadData();
     } catch (error) {
       console.log("Error creating and loading data: ", error);
     }
   }
 
+  // Wrapper function for deleting and loading data
   async function deleteAndLoad(item) {
     try {
-      deleteItem(item);
+      await deleteItem(item);
       loadData();
     } catch (error) {
-      console.log("Error deleteing and loading data: ", error);
+      console.log("Error deleting and loading data: ", error);
     }
   }
 
-  
-
-  // Function to access id of the clicked item
-  const handlePressedItem = (item) => {
-    console.log("Pressed: ", item.id)
-  }
-
-  // For FlatList. Renders each item with onPress, to trigger handlePressedItem on item
-  const renderItem = ({item})=>(
+  // Render individual exercise item in FlatList
+  const renderItem = ({ item }) => (
     <View style={styles.listRow}>
       <View style={styles.item}>
         <Text>{item.exercise}</Text>
@@ -111,19 +111,15 @@ export default function WorkoutDiary({ navigation }) {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>
-        What exercises will you perform in today's workout?
-      </Text>
+      <Text style={styles.title}>What exercises will you perform in today's workout?</Text>
 
       <FlatList
         style={styles.flatListStyle}
         data={exerciseList}
         renderItem={renderItem}
         keyExtractor={item => item.id}
-      />  
+      />
 
-      {/* <Text>{exerciseList[0].sets}</Text> */}
-      
       <View style={styles.inputContainer}>
         <TextInput
           value={exerciseName}
@@ -136,14 +132,13 @@ export default function WorkoutDiary({ navigation }) {
         </TouchableOpacity>
       </View>
 
-      <TouchableOpacity style={styles.startWorkout} onPress={() => navigation.navigate('CurrentWorkout')}>
+      <TouchableOpacity style={styles.startWorkout} onPress={() => navigation.navigate('CurrentWorkout', { exerciseList})}>
         <Text style={styles.buttonText}>START WORKOUT!</Text>
       </TouchableOpacity>
     </View>
   );
 }
 
-// Styles
 const styles = StyleSheet.create({
   container: {
     flex: 1,

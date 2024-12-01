@@ -22,10 +22,12 @@ export default function SignInScreen() {
       } else {
         userId = await signInUser(email, password);
       }
+      console.log("User ID:", userId);
       setUserId(userId);
       Alert.alert("Success", "Welcome!");
       navigation.replace("Home");
     } catch (error) {
+      console.error("Error:", error);
       Alert.alert("Error", error.message);
     }
   };
