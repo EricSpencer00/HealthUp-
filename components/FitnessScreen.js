@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { View, Text, FlatList, StyleSheet, ActivityIndicator, Image, TouchableOpacity, Alert } from 'react-native';
+import { View, Text, FlatList, StyleSheet, ActivityIndicator, Image, TouchableOpacity, Alert, ScrollView } from 'react-native';
 import muscles from './Muscles/Muscles'; // Import the muscles list
 // import firebase from 'firebase/compat/app';
 // import 'firebase/compat/firestore';
@@ -26,7 +26,7 @@ export default function FitnessScreen() {
       setLoading(true);
       try {
         console.log({ API_URL });
-        console.log(muscle.apiName);
+        console.log("fetching exercises for: " + muscle.apiName);
         const response = await fetch(`${API_URL}${muscle.apiName}`, {
           headers: {
             'X-RapidAPI-Key': 'REMOVED_RAPIDAPI_KEY',
@@ -35,7 +35,11 @@ export default function FitnessScreen() {
         });
         console.log(response);
         const data = await response.json();
-        setExercises(data);
+        console.log(data);
+        const filteredExercises = data.filter(exercise => 
+          exercise.target.toLowerCase() === muscle.apiName.toLowerCase()
+        );
+        setExercises(filteredExercises);
       } catch (error) {
         console.error("Failed to fetch exercises:", error);
       } finally {
@@ -155,15 +159,17 @@ const CustomDropdown = ({ data, selectedValue, onValueChange, labelKey = 'name',
       </TouchableOpacity>
       {isOpen && (
         <View style={dropdownStyles.dropdown}>
-          {data.map((item) => (
-            <TouchableOpacity
-              key={item[valueKey]}
-              onPress={() => handleSelect(item[valueKey])}
-              style={dropdownStyles.item}
-            >
-              <Text style={dropdownStyles.itemText}>{item[labelKey]}</Text>
-            </TouchableOpacity>
-          ))}
+          <ScrollView>
+            {data.map((item) => (
+              <TouchableOpacity
+                key={item[valueKey]}
+                onPress={() => handleSelect(item[valueKey])}
+                style={dropdownStyles.item}
+              >
+                <Text style={dropdownStyles.itemText}>{item[labelKey]}</Text>
+              </TouchableOpacity>
+            ))}
+          </ScrollView>
         </View>
       )}
     </View>
