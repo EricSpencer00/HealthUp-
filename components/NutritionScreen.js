@@ -5,6 +5,8 @@ import { UserContext } from './UserContext';
 import { useNavigation } from '@react-navigation/native'; // Add this import
 import { styles } from './styles/styles';
 import { addFoodEntry } from '../firebase/firebaseFunctions';
+import firebaseFunctions from '../firebase/firebaseFunctions';
+import createUserObject from './User';
 
 export default function NutritionScreen({ route }) {
   const { barcode } = route.params || {};  // Grab barcode from route params
@@ -16,7 +18,7 @@ export default function NutritionScreen({ route }) {
   const [portionSize, setPortionSize] = useState(1);  // User-defined portion size
   const [selectedFood, setSelectedFood] = useState(null); // To handle multiple food types
   const [isSearchActive, setIsSearchActive] = useState(false); // To toggle the scan barcode button
-  const { addFoodToJournal, getDailyData, getWeeklyData, getMonthlyData } = useContext(UserContext);
+  const { addFoodToJournal, getDailyData, getWeeklyData, getMonthlyData, user } = useContext(UserContext);
   const navigation = useNavigation(); // Initialize the navigation hook
 
   // Fetch nutrition data by barcode or search query
@@ -85,9 +87,17 @@ export default function NutritionScreen({ route }) {
 
   // Handle adding the current food item to the journal
   const handleAddToJournal = () => {
+    // only let users add food to journal
     if (selectedFood) {
+      if (!user) {
+        navigate('SigninScreen');
+        return;
+      }
       addFoodToJournal(selectedFood);
+      // upload to firebase
+      addNutritionEntry(user, selectedFood);
     }
+    
   };
 
   // Calculate total nutrition from the user's journal

@@ -30,12 +30,12 @@ export default function UserSettingsScreen() {
         keyboardType="numeric"
       />
 
-      <TextInput
+      {/* <TextInput
         style={styles.input}
         placeholder="Enter your favorite foods"
         value={favoriteFoods}
         onChangeText={setFavoriteFoods}
-      />
+      /> */}
 
       <Button title="Save" onPress={handleSave} />
     </View>
