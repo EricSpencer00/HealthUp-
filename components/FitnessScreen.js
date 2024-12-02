@@ -58,13 +58,13 @@ export default function FitnessScreen() {
 
   if (loading) return <ActivityIndicator size="large" color="#ffffff" />;
 
-  const handleSaveExercise = async (exercise) => { // only show if there is a user logged in
+  const handleSaveExercise = async (exerciseName) => { // only show if there is a user logged in
     if (!userId) {
       console.error('User not logged in');
       return;
     }
     try {
-      await saveExercise(userId, exercise);
+      await saveExercise(userId, exerciseName);
       Alert.alert('Exercise saved successfully');
     } catch (error) {
       console.error('Failed to save exercise:', error);
@@ -135,7 +135,7 @@ export default function FitnessScreen() {
 
             {/* Save exercise Button only if there is user logged in */}
             {userId && (
-              <TouchableOpacity onPress={() => handleSaveExercise(item)}>
+              <TouchableOpacity onPress={() => handleSaveExercise(item.name)}>
                 <Text style={styles.moreText}>Save Exercise</Text>
               </TouchableOpacity>
             )}

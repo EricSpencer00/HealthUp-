@@ -14,6 +14,7 @@ export const UserProvider = ({ children }) => {
   const [nutritionJournal, setNutritionJournal] = useState([]);
   const [completedWorkouts, setCompletedWorkouts] = useState([]);
   const [userId, setUserId] = useState(null);
+  const [email, setEmail] = useState('');
 
   // Function to set the current user's id (retrieved from Firebase Authentication)
   const setUser = (id) => setUserId(id);

@@ -1,4 +1,4 @@
-import { firestore } from './firebaseConfig';
+// import { firestore } from './firebaseConfig';
 import { db } from './firebaseConfig';
 import { getFirestore, collection, getDocs, addDoc } from 'firebase/firestore';
 
@@ -9,7 +9,7 @@ import { getFirestore, collection, getDocs, addDoc } from 'firebase/firestore';
  */
 export const getUserProfile = async (userId) => {
   try {
-    const profileDoc = await firestore.collection('users').doc(userId).collection('profile').doc('data').get();
+    const profileDoc = await db.collection('users').doc(userId).collection('profile').doc('data').get();
     return profileDoc.exists ? profileDoc.data() : null;
   } catch (error) {
     console.error("Error fetching user profile:", error);
@@ -24,7 +24,7 @@ export const getUserProfile = async (userId) => {
  */
 export const updateUserProfile = async (userId, profileData) => {
   try {
-    await firestore.collection('users').doc(userId).collection('profile').doc('data').set(profileData, { merge: true });
+    await db.collection('users').doc(userId).collection('profile').doc('data').set(profileData, { merge: true });
   } catch (error) {
     console.error("Error updating user profile:", error);
   }
@@ -37,7 +37,7 @@ export const updateUserProfile = async (userId, profileData) => {
  */
 export const addNutritionEntry = async (userId, entry) => {
   try {
-    await firestore.collection('users').doc(userId).collection('nutritionHistory').add(entry);
+    await db.collection('users').doc(userId).collection('nutritionHistory').add(entry);
   } catch (error) {
     console.error("Error adding nutrition entry:", error);
   }
@@ -50,7 +50,7 @@ export const addNutritionEntry = async (userId, entry) => {
  */
 export const getNutritionHistory = async (userId) => {
   try {
-    const snapshot = await firestore.collection('users').doc(userId).collection('nutritionHistory').get();
+    const snapshot = await db.collection('users').doc(userId).collection('nutritionHistory').get();
     return snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
   } catch (error) {
     console.error("Error fetching nutrition history:", error);
@@ -65,7 +65,7 @@ export const getNutritionHistory = async (userId) => {
  */
 export const addWorkoutEntry = async (userId, entry) => {
   try {
-    await firestore.collection('users').doc(userId).collection('workoutHistory').add(entry);
+    await db.collection('users').doc(userId).collection('workoutHistory').add(entry);
   } catch (error) {
     console.error("Error adding workout entry:", error);
   }
@@ -78,7 +78,7 @@ export const addWorkoutEntry = async (userId, entry) => {
  */
 export const getWorkoutHistory = async (userId) => {
   try {
-    const snapshot = await firestore.collection('users').doc(userId).collection('workoutHistory').get();
+    const snapshot = await db.collection('users').doc(userId).collection('workoutHistory').get();
     return snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
   } catch (error) {
     console.error("Error fetching workout history:", error);
@@ -131,3 +131,46 @@ export const deleteExercise = async (userId, exerciseId) => {
   }
 };
 
+export const fetchUserName = async (userId) => {
+  try {
+    const userDoc = await db.collection('users').doc(userId).get();
+    if (doc.exists) {
+      return doc.data().userName || null;
+    }
+    return null;
+  } catch (error) {
+    console.error('Error fetching user name:', error.message);
+    throw error;
+  }
+}
+
+// export const getWeight = async (userId) => {
+//   const doc = await db.collection('users').doc(userId).get();
+//   if (doc.exists) {
+//     return doc.data().weight || null;
+//   } else {
+//     await db.collection('users').doc(userId).set({ weight: null }, { merge: true });
+//     return null;
+//   }
+// };
+
+// export const setWeight = async (userId, weight) => {
+//   await db.collection('users').doc(userId).set({ weight }, { merge: true });
+// };
+
+// // Get height from Firestore
+// export const getHeight = async (userId) => {
+//   const doc = await db.collection('users').doc(userId).get();
+//   if (doc.exists) {
+//     return doc.data().height || null; // Return height if present, or null
+//   } else {
+//     // Create document with default fields if it doesn't exist
+//     await db.collection('users').doc(userId).set({ height: null }, { merge: true });
+//     return null;
+//   }
+// };
+
+// // Set height in Firestore
+// export const setHeight = async (userId, height) => {
+//   await db.collection('users').doc(userId).set({ height }, { merge: true });
+// };

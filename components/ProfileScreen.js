@@ -1,15 +1,18 @@
 import React, { useState, useContext } from 'react';
 import { View, Text, Button, StyleSheet, TextInput, ImageBackground, Dimensions, TouchableOpacity } from 'react-native';
 import { UserContext } from './UserContext';
+import { getWeight, setWeight } from '../firebase/firebaseFunctions';
+import { fetchUserName } from '../firebase/firebaseFunctions';
+
 
 const { width, height } = Dimensions.get('window');
 
 // Welcome Screen Component
 export default function ProfileScreen({ navigation }) {
-  const { userName, weight, favoriteFoods } = useContext(UserContext);
-
-  // const bgPath = {uri: './components/Images/FitBG.png' };
-  
+  // const { userName, weight, favoriteFoods } = useContext(UserContext);
+  const { userId } = useContext(UserContext);
+  const { userName } = fetchUserName(userId);
+  console.log("userName: ", userName);
 
   return (
     <View style={styles.container}>
@@ -20,16 +23,16 @@ export default function ProfileScreen({ navigation }) {
           <Text style={styles.title}>Your profile.</Text>
 
           <Text style={styles.info}>User Name: {userName || "Not Set"}</Text>
-          <Text style={styles.info}>Weight: {weight || "Not Set"} kg</Text>
-          <Text style={styles.info}>Favorite Foods: {favoriteFoods || "Not Set"}</Text>
-
+          {/* <Text style={styles.info}>Weight: {weight || "Not Set"} kg</Text>
+          <Text style={styles.info}>Favorite Foods: {favoriteFoods || "Not Set"}</Text> */}
+{/* 
           <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('UserSettings')}>
             <Text style={styles.buttonText}>Go to User Settings</Text>
           </TouchableOpacity>
 
           <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('UserInfo')}>
             <Text style={styles.buttonText}>View User Info</Text>
-          </TouchableOpacity>
+          </TouchableOpacity> */}
 
         </View>
       </ImageBackground>

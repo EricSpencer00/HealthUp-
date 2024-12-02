@@ -45,7 +45,7 @@ export default function WorkoutDiary({ navigation }) {
           // Extract the correct fields
           newList.push({ 
             id: doc.id, 
-            exercise: data.exercise,  // Accessing the nested name field
+            exercise: data.name,  // Accessing the nested name field
             sets: [0],  // Placeholder for sets, modify as needed
           });
           console.log("Adding exercise: ", doc.id, " => ", data);
