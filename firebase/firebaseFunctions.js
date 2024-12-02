@@ -1,6 +1,6 @@
-// import { firestore } from './firebaseConfig';
 import { db } from './firebaseConfig';
-import { getFirestore, collection, getDocs, addDoc } from 'firebase/firestore';
+import 'firebase/firestore';
+import { doc, getDoc, getFirestore, collection, addDoc, arrayUnion, updateDoc } from 'firebase/firestore';
 
 /**
  * Fetch the user's profile data.
@@ -37,11 +37,44 @@ export const updateUserProfile = async (userId, profileData) => {
  */
 export const addNutritionEntry = async (userId, entry) => {
   try {
-    await db.collection('users').doc(userId).collection('nutritionHistory').add(entry);
+    const userDocRef = doc(db, 'users', userId);
+    const userDoc = await getDoc(userDocRef);
+
+    if (!userDoc.exists()) {
+      console.error("User does not exist.");
+      return;
+    }
+
+    const newEntry = {
+      food_name: entry.food_name || 'Unknown',
+      meal_type: entry.meal_type || null,
+      consumed_at: entry.consumed_at || new Date(),
+      serving_qty: entry.serving_qty || 1,
+      serving_unit: entry.serving_unit || 'unit',
+      serving_weight_grams: entry.serving_weight_grams || 0,
+      nutrients: {
+        calories: entry.nf_calories || 0,
+        protein: entry.nf_protein || 0,
+        carbs: entry.nf_total_carbohydrate || 0,
+        fat: entry.nf_total_fat || 0,
+        fiber: entry.nf_dietary_fiber || 0,
+        sugars: entry.nf_sugars || 0,
+        sodium: entry.nf_sodium || 0,
+        cholesterol: entry.nf_cholesterol || 0,
+      },
+      photo: entry.photo || {},
+    };
+
+    await updateDoc(userDocRef, {
+      nutritionHistory: arrayUnion(newEntry),
+    });
+
+    console.log("Nutrition entry added successfully:", newEntry);
   } catch (error) {
     console.error("Error adding nutrition entry:", error);
   }
 };
+
 
 /**
  * Fetch all entries from the user's nutrition history.
