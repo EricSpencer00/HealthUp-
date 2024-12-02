@@ -132,11 +132,11 @@ export default function WorkoutDiary({ navigation }) {
         </TouchableOpacity>
       </View>
 
-      <TouchableOpacity style={styles.startWorkout} onPress={() => navigation.navigate('CurrentWorkout', { exerciseList})}>
+      <TouchableOpacity style={styles.startWorkout} onPress={() => navigation.navigate('My Workout', { exerciseList})}>
         <Text style={styles.buttonText}>START WORKOUT!</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.startWorkout} onPress={() => navigation.navigate('Fitness')}>
+      <TouchableOpacity style={styles.startWorkout} onPress={() => navigation.navigate('Exercise List')}>
         <Text style={styles.buttonText}>View exercise list</Text>
       </TouchableOpacity>
     </View>

@@ -1,5 +1,5 @@
 import React, { useContext, useState } from 'react';
-import { View, Text, TextInput, Button, StyleSheet } from 'react-native';
+import { View, Text, TextInput, Button, StyleSheet, TouchableOpacity } from 'react-native';
 import { UserContext } from './UserContext';
 import { useNavigation } from '@react-navigation/native';
 
@@ -37,7 +37,10 @@ export default function UserSettingsScreen() {
         onChangeText={setFavoriteFoods}
       /> */}
 
-      <Button title="Save" onPress={handleSave} />
+      <TouchableOpacity style={styles.button} onPress={handleSave}>
+        <Text style={styles.buttonText}>Save</Text>
+      </TouchableOpacity>
+
     </View>
   );
 }
@@ -48,6 +51,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     padding: 16,
+    backgroundColor: '#F5FCFF',
   },
   title: {
     fontSize: 24,
@@ -60,5 +64,20 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#ccc',
     marginBottom: 12,
+  },
+  button: {
+    padding: 10,
+    borderRadius: 5,
+    margin: 7,
+    width: '100%',
+    alignSelf: 'center',
+    backgroundColor: '#55c6f2',
+  },
+  buttonText: {
+    color: 'white',
+    textTransform: 'uppercase',
+    fontWeight: 'bold',
+    fontSize: 15,
+    textAlign: 'center',
   },
 });

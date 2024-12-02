@@ -28,15 +28,15 @@ export type RootStackParamList = {
   Welcome: { userName: string };
   Profile: { userName: string };
   FitnessList: { /* API Calls here */}
-  SignIn?: { /* Possible Sign In Screen */}
-  Fitness: undefined;
+  Login?: { /* Possible Sign In Screen */}
+  'Exercise List': undefined;
   UserSettings: undefined;
   UserInfo: undefined;
-  NutritionScreen: undefined;
+  Nutrition: undefined;
   BarcodeScanner: undefined;
-  WorkoutDiary: undefined;
-  CurrentWorkout: undefined;
-  JournalScreen: undefined;
+  Exercise: undefined;
+  'My Workout': undefined;
+  Journal: undefined;
   SignInScreen: undefined;
 };
 
@@ -51,17 +51,17 @@ export default function App() {
       <NavigationContainer>
         <Stack.Navigator initialRouteName="Welcome">
           <Stack.Screen name="Welcome" component={WelcomeScreen} />
-          <Stack.Screen name="SignIn" component={SignInScreen} />
+          <Stack.Screen name="Login" component={SignInScreen} />
           <Stack.Screen name="Home" component={HomeScreen} />
           <Stack.Screen name="Profile" component={ProfileScreen} />
-          <Stack.Screen name="Fitness" component={FitnessScreen} />
+          <Stack.Screen name="Exercise List" component={FitnessScreen} />
           <Stack.Screen name="UserSettings" component={UserSettingsScreen} />
           <Stack.Screen name="UserInfo" component={UserInfoScreen} />
-          <Stack.Screen name="NutritionScreen" component={NutritionScreen} />
+          <Stack.Screen name="Nutrition" component={NutritionScreen} />
           <Stack.Screen name="BarcodeScanner" component={BarcodeScanner} />
-          <Stack.Screen name="WorkoutDiary" component={WorkoutDiary} />
-          <Stack.Screen name="JournalScreen" component={JournalScreen} />
-          <Stack.Screen name="CurrentWorkout" component={CurrentWorkout} />
+          <Stack.Screen name="Exercise" component={WorkoutDiary} />
+          <Stack.Screen name="Journal" component={JournalScreen} />
+          <Stack.Screen name="My Workout" component={CurrentWorkout} />
         </Stack.Navigator>
       </NavigationContainer>
     </UserProvider>

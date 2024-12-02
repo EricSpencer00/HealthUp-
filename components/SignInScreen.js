@@ -1,6 +1,6 @@
 // SignInScreen.js
 import React, { useState, useContext } from 'react';
-import { View, TextInput, Button, Text, StyleSheet, Alert } from 'react-native';
+import { View, TextInput, Button, Text, StyleSheet, Alert, TouchableOpacity } from 'react-native';
 import { signInUser, signUpUser } from '../firebase/auth'; // Import Firebase auth functions
 import { useNavigation } from '@react-navigation/native';
 import { UserContext } from './UserContext';
@@ -56,11 +56,15 @@ export default function SignInScreen() {
         secureTextEntry
         style={styles.input}
       />
-      <Button title={isSignUp ? "Sign Up" : "Sign In"} onPress={handleAuth} />
-      <Button
-        title={isSignUp ? "Already have an account? Sign In" : "Create an account"}
-        onPress={() => setIsSignUp(!isSignUp)}
-      />
+
+      <TouchableOpacity style={styles.button} onPress={handleAuth}>
+        <Text style={styles.buttonText}>{isSignUp ? "Sign Up" : "Sign In"}</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity style={styles.button} onPress={() => setIsSignUp(!isSignUp)}>
+        <Text style={styles.buttonText}>{isSignUp ? "Already have an account? Sign In" : "Create an account"}</Text>
+      </TouchableOpacity>
+
     </View>
   );
 }
@@ -70,6 +74,7 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 16,
     justifyContent: 'center',
+    backgroundColor: '#F5FCFF',
   },
   title: {
     fontSize: 24,
@@ -84,5 +89,20 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     marginBottom: 12,
     paddingHorizontal: 10,
+  },
+  button: {
+    padding: 10,
+    borderRadius: 5,
+    margin: 7,
+    width: '100%',
+    alignSelf: 'center',
+    backgroundColor: '#55c6f2',
+  },
+  buttonText: {
+    color: 'white',
+    textTransform: 'uppercase',
+    fontWeight: 'bold',
+    fontSize: 15,
+    textAlign: 'center',
   },
 });

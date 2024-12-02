@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useContext } from 'react';
-import { View, Text, ActivityIndicator, Button, TextInput, FlatList, TouchableOpacity } from 'react-native';
+import { View, Text, ActivityIndicator, Button, TextInput, FlatList, TouchableOpacity, StyleSheet } from 'react-native';
 import axios from 'axios';
 import { UserContext } from './UserContext';
 import { useNavigation } from '@react-navigation/native';
@@ -134,16 +134,17 @@ export default function NutritionScreen({ route }) {
         value={searchQuery}
         onChangeText={setSearchQuery}
       />
-      <Button title="Search" onPress={handleSearch} />
+      <TouchableOpacity style={styles.button} onPress={handleSearch}>
+        <Text style={styles.buttonText}>Search</Text>
+      </TouchableOpacity>
 
       {loading && <ActivityIndicator size="large" color="#0000ff" />}
       {error && <Text style={styles.error}>{error}</Text>}
 
       {!isSearchActive && (
-        <Button
-          title="Scan Barcode"
-          onPress={() => navigation.navigate('BarcodeScanner')}
-        />
+        <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('BarcodeScanner')}>
+          <Text style={styles.buttonText}>Scan Barcode</Text>
+        </TouchableOpacity>
       )}
       {!isSearchActive && barcode && <Text style={styles.barcodeText}>Barcode: {barcode}</Text>}
 
@@ -159,3 +160,21 @@ export default function NutritionScreen({ route }) {
     </View>
   );
 }
+
+const styles2 = StyleSheet.create({
+  button: {
+    padding: 10,
+    borderRadius: 5,
+    margin: 7,
+    width: '100%',
+    alignSelf: 'center',
+    backgroundColor: '#55c6f2',
+  },
+  buttonText: {
+    color: 'white',
+    textTransform: 'uppercase',
+    fontWeight: 'bold',
+    fontSize: 15,
+    textAlign: 'center',
+  },
+});

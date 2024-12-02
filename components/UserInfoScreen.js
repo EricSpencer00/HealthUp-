@@ -1,11 +1,14 @@
 import React, { useContext } from 'react';
-import { View, Text, StyleSheet, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Dimensions } from 'react-native';
 import { UserContext } from './UserContext';
+
+const { width, height } = Dimensions.get('window');
 
 export default function UserInfoScreen() {
   const { userName, weight, favoriteFoods, nutritionJournal, getNutritionStats } = useContext(UserContext);
 
   // Retrieve nutrition stats for display
+  // ** 
   // const { calories, protein, fat } = getNutritionStats();
 
   return (
@@ -43,6 +46,8 @@ const styles = StyleSheet.create({
   container: {
     padding: 16,
     alignItems: 'center',
+    backgroundColor: '#F5FCFF',
+    height: height,
   },
   title: {
     fontSize: 24,

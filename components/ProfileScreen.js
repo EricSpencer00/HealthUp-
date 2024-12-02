@@ -1,5 +1,5 @@
 import React, { useState, useContext } from 'react';
-import { View, Text, Button, StyleSheet, TextInput, ImageBackground, Dimensions } from 'react-native';
+import { View, Text, Button, StyleSheet, TextInput, ImageBackground, Dimensions, TouchableOpacity } from 'react-native';
 import { UserContext } from './UserContext';
 
 const { width, height } = Dimensions.get('window');
@@ -23,15 +23,14 @@ export default function ProfileScreen({ navigation }) {
           <Text style={styles.info}>Weight: {weight || "Not Set"} kg</Text>
           <Text style={styles.info}>Favorite Foods: {favoriteFoods || "Not Set"}</Text>
 
-          <Button
-            title="Go to User Settings"
-            onPress={() => navigation.navigate('UserSettings')}
-          />
+          <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('UserSettings')}>
+            <Text style={styles.buttonText}>Go to User Settings</Text>
+          </TouchableOpacity>
 
-          <Button
-            title="View User Info"
-            onPress={() => navigation.navigate('UserInfo')}
-          />
+          <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('UserInfo')}>
+            <Text style={styles.buttonText}>View User Info</Text>
+          </TouchableOpacity>
+
         </View>
       </ImageBackground>
       
@@ -125,5 +124,20 @@ const styles = StyleSheet.create({
   info: {
     fontSize: 18,
     marginTop: 8,
+  },
+  button: {
+    padding: 10,
+    borderRadius: 5,
+    margin: 7,
+    width: '100%',
+    alignSelf: 'center',
+    backgroundColor: '#55c6f2',
+  },
+  buttonText: {
+    color: 'white',
+    textTransform: 'uppercase',
+    fontWeight: 'bold',
+    fontSize: 15,
+    textAlign: 'center',
   },
 });

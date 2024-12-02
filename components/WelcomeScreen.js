@@ -1,5 +1,5 @@
 import React, { useState, useContext } from 'react';
-import { View, Text, Button, StyleSheet, ImageBackground, Dimensions } from 'react-native';
+import { View, Text, Button, StyleSheet, ImageBackground, Dimensions, TouchableOpacity } from 'react-native';
 import { UserContext } from './UserContext';
 
 const { width, height } = Dimensions.get('window');
@@ -13,15 +13,15 @@ export function WelcomeScreen({ navigation }) {
         <View style={styles.whiteBox}>
           
           <Text style={styles.title}>Welcome to HealthUp!</Text>
-          <Button
-            title="Login"
-            onPress={() => navigation.navigate('SignIn')}
-          />
 
-          <Button
-            title="Home (remove later)"
-            onPress={() => navigation.navigate('Home')}
-          />
+          <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Login')}>
+            <Text style={styles.buttonText}>Login</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Home')}>
+            <Text style={styles.buttonText}>Home (remove later)</Text>
+          </TouchableOpacity>
+
         </View>
       </ImageBackground>
       
@@ -115,6 +115,21 @@ const styles = StyleSheet.create({
   info: {
     fontSize: 18,
     marginTop: 8,
+  },
+  button: {
+    padding: 10,
+    borderRadius: 5,
+    margin: 7,
+    width: '100%',
+    alignSelf: 'center',
+    backgroundColor: '#55c6f2',
+  },
+  buttonText: {
+    color: 'white',
+    textTransform: 'uppercase',
+    fontWeight: 'bold',
+    fontSize: 15,
+    textAlign: 'center',
   },
 });
 

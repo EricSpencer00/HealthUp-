@@ -88,19 +88,22 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
-    backgroundColor: '#f0f0f0',
+    backgroundColor: '#F5FCFF',
   },
   title: {
     fontSize: 24,
     fontWeight: 'bold',
     marginBottom: 20,
     textAlign: 'center',
+    color: 'black'
   },
   section: {
     marginBottom: 20,
     padding: 10,
     backgroundColor: '#ffffff',
     borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#d6d6d6',
   },
   sectionTitle: {
     fontSize: 20,
