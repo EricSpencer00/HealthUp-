@@ -24,11 +24,18 @@ export default function CurrentWorkoutScreen({ route }) {
     if (exerciseList.length > 0) {
       setCurrentExerciseSets(exerciseList[0]?.sets);
       setCurrentExerciseName(exerciseList[0]?.exercise);
+      console.log("P2: Exercises loaded!")
     }
   }, [exerciseList]);
 
   const addSet = () => {
-    setCurrentExerciseSets([...currentExerciseSets, 0]);
+    const updatedSets = [...currentExerciseSets, 0];
+    setCurrentExerciseSets(updatedSets);
+  
+    // Update exercise list
+    const updatedExerciseList = [...exerciseList];
+    updatedExerciseList[currentExerciseIdx].sets = updatedSets;
+    setExerciseList(updatedExerciseList);
   };
 
   const goToNextExercise = () => {
@@ -88,10 +95,20 @@ export default function CurrentWorkoutScreen({ route }) {
           placeholder="0"
           keyboardType="numeric"
           maxLength={2}
+          value={item.toString()} 
+          onChangeText={(text) => {
+            const updatedSets = [...currentExerciseSets];
+            updatedSets[index] = parseInt(text, 10) || 0; 
+            setCurrentExerciseSets(updatedSets);
+  
+            const updatedExerciseList = [...exerciseList];
+            updatedExerciseList[currentExerciseIdx].sets = updatedSets;
+            setExerciseList(updatedExerciseList);
+          }}
         />
       </View>
     </View>
-  );
+  );  
 
   return (
     <View style={styles.container}>

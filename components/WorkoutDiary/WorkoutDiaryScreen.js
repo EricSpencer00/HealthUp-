@@ -54,7 +54,7 @@ export default function WorkoutDiary({ navigation }) {
       } else {
         // If no user is logged in, use default exercises
         setExerciseList(defaultExercises);
-        console.log("Loading default exercises.");
+        console.log("P1: Loading default exercises.");
       }
     } catch (error) {
       console.log("Error loading data: ", error);
@@ -132,7 +132,7 @@ export default function WorkoutDiary({ navigation }) {
         </TouchableOpacity>
       </View>
 
-      <TouchableOpacity style={styles.startWorkout} onPress={() => navigation.navigate('My Workout', { exerciseList})}>
+      <TouchableOpacity style={styles.startWorkout} onPress={() => navigation.navigate('My Workout', { exercises: exerciseList })}>
         <Text style={styles.buttonText}>START WORKOUT!</Text>
       </TouchableOpacity>
 
