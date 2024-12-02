@@ -7,6 +7,7 @@ import { UserContext } from './components/UserContext';
 // import { EventTypes } from 'react-native-gesture-handler/lib/typescript/web/interfaces';
 
 // Moved components into own folder, import them here to be used in App
+import ProfileScreen from './components/ProfileScreen';
 import { WelcomeScreen }  from './components/WelcomeScreen';
 import FitnessScreen from './components/FitnessScreen';
 import HomeScreen from './components/HomeScreen';
@@ -25,6 +26,7 @@ import SignInScreen from './components/SignInScreen';
 export type RootStackParamList = {
   Home: undefined;
   Welcome: { userName: string };
+  Profile: { userName: string };
   FitnessList: { /* API Calls here */}
   SignIn?: { /* Possible Sign In Screen */}
   Fitness: undefined;
@@ -47,10 +49,11 @@ export default function App() {
   return (
     <UserProvider>
       <NavigationContainer>
-        <Stack.Navigator initialRouteName="Home">
+        <Stack.Navigator initialRouteName="Welcome">
+          <Stack.Screen name="Welcome" component={WelcomeScreen} />
           <Stack.Screen name="SignIn" component={SignInScreen} />
           <Stack.Screen name="Home" component={HomeScreen} />
-          <Stack.Screen name="Welcome" component={WelcomeScreen} />
+          <Stack.Screen name="Profile" component={ProfileScreen} />
           <Stack.Screen name="Fitness" component={FitnessScreen} />
           <Stack.Screen name="UserSettings" component={UserSettingsScreen} />
           <Stack.Screen name="UserInfo" component={UserInfoScreen} />

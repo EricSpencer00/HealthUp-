@@ -1,26 +1,36 @@
 import React, { useState, useContext } from 'react';
-import { View, Text, Button, StyleSheet, ImageBackground, Dimensions } from 'react-native';
+import { View, Text, Button, StyleSheet, TextInput, ImageBackground, Dimensions } from 'react-native';
 import { UserContext } from './UserContext';
 
 const { width, height } = Dimensions.get('window');
 
 // Welcome Screen Component
-export function WelcomeScreen({ navigation }) {
+export default function ProfileScreen({ navigation }) {
+  const { userName, weight, favoriteFoods } = useContext(UserContext);
+
+  // const bgPath = {uri: './components/Images/FitBG.png' };
+  
+
   return (
     <View style={styles.container}>
 
       <ImageBackground source={require('./assets/FitBG.png')} style={styles.container}>
         <View style={styles.whiteBox}>
           
-          <Text style={styles.title}>Welcome to HealthUp!</Text>
+          <Text style={styles.title}>Your profile.</Text>
+
+          <Text style={styles.info}>User Name: {userName || "Not Set"}</Text>
+          <Text style={styles.info}>Weight: {weight || "Not Set"} kg</Text>
+          <Text style={styles.info}>Favorite Foods: {favoriteFoods || "Not Set"}</Text>
+
           <Button
-            title="Login"
-            onPress={() => navigation.navigate('SignIn')}
+            title="Go to User Settings"
+            onPress={() => navigation.navigate('UserSettings')}
           />
 
           <Button
-            title="Home (remove later)"
-            onPress={() => navigation.navigate('Home')}
+            title="View User Info"
+            onPress={() => navigation.navigate('UserInfo')}
           />
         </View>
       </ImageBackground>
@@ -117,4 +127,3 @@ const styles = StyleSheet.create({
     marginTop: 8,
   },
 });
-

@@ -8,36 +8,25 @@ import { EventTypes } from 'react-native-gesture-handler/lib/typescript/web/inte
 export default function HomeScreen({ navigation }) {
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Welcome to the Fitness App!</Text>
-      <Button 
-        title="Sign In" 
-        onPress={() => navigation.navigate('SignIn')} 
-      />
+      <View style={styles.topBar}></View>
+      <Text style={styles.title}>Welcome to HealthUp!</Text>
       <Text style={styles.title}>Home Screen</Text>
       <Button
-        title="Go to Welcome"
-        onPress={() => navigation.navigate('Welcome', { userName: 'John Doe' })}
+        title="Go to Profile"
+        onPress={() => navigation.navigate('Profile', { userName: 'John Doe' })}
       />
       <Button 
-        title="Go to Fitness"
-        onPress={() => navigation.navigate('Fitness')}
-      />
-      <Button
-        title="Go to Workout Diary"
-        onPress={() => navigation.navigate('WorkoutDiary')}
-      />
-      <Button 
-        title="Go to Nutrition"
+        title=" Nutrition"
         onPress={() => navigation.navigate('NutritionScreen')}
       ></Button>
       <Button
-        title="Go to Journal"
+        title="Exercise"
+        onPress={() => navigation.navigate('WorkoutDiary')}
+      />
+      <Button
+        title="Journal"
         onPress={() => navigation.navigate('JournalScreen')}
       ></Button>  
-      <Button
-        title="Go to Barcode Scanner"
-        onPress={() => navigation.navigate('BarcodeScanner')}
-      ></Button>
     </View>
   );
 }

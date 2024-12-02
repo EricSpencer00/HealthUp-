@@ -6,7 +6,7 @@ export default function UserInfoScreen() {
   const { userName, weight, favoriteFoods, nutritionJournal, getNutritionStats } = useContext(UserContext);
 
   // Retrieve nutrition stats for display
-  const { calories, protein, fat } = getNutritionStats();
+  // const { calories, protein, fat } = getNutritionStats();
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
@@ -32,9 +32,9 @@ export default function UserInfoScreen() {
       )}
 
       <Text style={styles.title}>Total Nutrition Stats</Text>
-      <Text style={styles.info}>Calories: {calories} kcal</Text>
-      <Text style={styles.info}>Protein: {protein} g</Text>
-      <Text style={styles.info}>Fat: {fat} g</Text>
+      {/* <Text style={styles.info}>Calories: {calories} kcal</Text> */}
+      {/* <Text style={styles.info}>Protein: {protein} g</Text> */}
+      {/* <Text style={styles.info}>Fat: {fat} g</Text> */}
     </ScrollView>
   );
 }

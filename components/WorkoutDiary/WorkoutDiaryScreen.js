@@ -135,6 +135,10 @@ export default function WorkoutDiary({ navigation }) {
       <TouchableOpacity style={styles.startWorkout} onPress={() => navigation.navigate('CurrentWorkout', { exerciseList})}>
         <Text style={styles.buttonText}>START WORKOUT!</Text>
       </TouchableOpacity>
+
+      <TouchableOpacity style={styles.startWorkout} onPress={() => navigation.navigate('Fitness')}>
+        <Text style={styles.buttonText}>View exercise list</Text>
+      </TouchableOpacity>
     </View>
   );
 }
