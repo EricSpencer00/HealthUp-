@@ -79,17 +79,31 @@ export const addNutritionEntry = async (userId, entry) => {
 /**
  * Fetch all entries from the user's nutrition history.
  * @param {string} userId - The user's ID.
- * @returns {Array} Nutrition history entries.
+ * @returns {Promise<Array>} Nutrition history entries.
  */
 export const getNutritionHistory = async (userId) => {
   try {
-    const snapshot = await db.collection('users').doc(userId).collection('nutritionHistory').get();
-    return snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+    const userDocRef = doc(db, 'users', userId);
+    const userDoc = await getDoc(userDocRef);
+
+    if (!userDoc.exists()) {
+      console.error("User does not exist.");
+      return [];
+    }
+
+    const userData = userDoc.data();
+    const nutritionHistory = userData.nutritionHistory || [];
+
+    return nutritionHistory.map((entry, index) => ({
+      id: `${userId}_${index}`, // Unique ID for each entry
+      ...entry,
+    }));
   } catch (error) {
     console.error("Error fetching nutrition history:", error);
     return [];
   }
 };
+
 
 /**
  * Add a new entry to the user's workout history.
@@ -98,7 +112,28 @@ export const getNutritionHistory = async (userId) => {
  */
 export const addWorkoutEntry = async (userId, entry) => {
   try {
-    await db.collection('users').doc(userId).collection('workoutHistory').add(entry);
+    const userDocRef = doc(db, 'users', userId);
+    const userDoc = await getDoc(userDocRef);
+
+    if (!userDoc.exists()) {
+      console.error("User does not exist.");
+      return;
+    }
+
+    const newEntry = {
+      workout_name: entry.workout_name || 'Unknown',
+      workout_type: entry.workout_type || null,
+      completed_at: entry.completed_at || new Date(),
+      duration_minutes: entry.duration_minutes || 0,
+      calories_burned: entry.calories_burned || 0,
+      notes: entry.notes || '',
+    };
+
+    await updateDoc(userDocRef, {
+      workoutHistory: arrayUnion(newEntry),
+    });
+
+    console.log("Workout entry added successfully:", newEntry);
   } catch (error) {
     console.error("Error adding workout entry:", error);
   }
@@ -107,17 +142,31 @@ export const addWorkoutEntry = async (userId, entry) => {
 /**
  * Fetch all entries from the user's workout history.
  * @param {string} userId - The user's ID.
- * @returns {Array} Workout history entries.
+ * @returns {Promise<Array>} Workout history entries.
  */
 export const getWorkoutHistory = async (userId) => {
   try {
-    const snapshot = await db.collection('users').doc(userId).collection('workoutHistory').get();
-    return snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+    const userDocRef = doc(db, 'users', userId);
+    const userDoc = await getDoc(userDocRef);
+
+    if (!userDoc.exists()) {
+      console.error("User does not exist.");
+      return [];
+    }
+
+    const userData = userDoc.data();
+    const workoutHistory = userData.workoutHistory || [];
+
+    return workoutHistory.map((entry, index) => ({
+      id: `${userId}_${index}`, // Unique ID for each entry
+      ...entry,
+    }));
   } catch (error) {
     console.error("Error fetching workout history:", error);
     return [];
   }
 };
+
 
 export const saveExercise = async (userId, exerciseName) => {
   try {
