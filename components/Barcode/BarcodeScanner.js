@@ -34,21 +34,16 @@ export default function BarcodeScreen() {
     }
   }, [devices]);
 
-  // Configure barcode scanner
   const codeScanner = useCodeScanner({
-    codeTypes: ['qr', 'ean-13', 'upc-a'], // Adjust code types based on your use case
+    codeTypes: ['upc-a'], // <-- ✅ We configure for 'upc-a' types
     onCodeScanned: (codes) => {
-      if (codes.length > 0) {
-        const detectedBarcode = codes[0].content; // Assuming the library returns `content`
-        setBarcode(detectedBarcode);
-        Alert.alert('Barcode Scanned', `Data: ${detectedBarcode}`, [
-          {
-            text: 'OK',
-            onPress: () => navigation.navigate('Nutrition', { barcodeData: detectedBarcode }),
-          },
-        ]);
+      for (const code of codes) {
+        // console.log(code.type); // <-- ❌ On iOS, we receive 'ean-13'
+        setBarcode(code.value);
+        console.log('Detected barcode:', code.value);
+        navigation.navigate('Nutrition', { barcodeData: code.value });
       }
-    },
+    }
   });
 
   const handleManualInput = () => {
@@ -57,7 +52,7 @@ export default function BarcodeScreen() {
       Alert.alert('Manual Entry', `Data: ${manualInput}`, [
         {
           text: 'OK',
-          onPress: () => navigation.navigate('NutritionScreen', { barcodeData: manualInput }),
+          onPress: () => navigation.navigate('Nutrition', { barcodeData: manualInput }),
         },
       ]);
       setManualInput('');

@@ -16,7 +16,9 @@ import { styles } from './styles/styles';
 import { addNutritionEntry } from '../firebase/firebaseFunctions';
 
 export default function NutritionScreen({ route }) {
-  const { barcode } = route.params || {};
+  const { barcodeData } = route.params || {};
+  console.log("Received routes.params: ", route.params);
+  console.log('Barcode data:', barcodeData);
   const [nutritionData, setNutritionData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -24,7 +26,7 @@ export default function NutritionScreen({ route }) {
   const [portionSize, setPortionSize] = useState(1);
   const [selectedFood, setSelectedFood] = useState(null);
   const [isSearchActive, setIsSearchActive] = useState(false);
-  const { user, userId } = useContext(UserContext);
+  const { userId } = useContext(UserContext);
   const navigation = useNavigation();
 
   // Fetch nutrition data by barcode or search query
@@ -40,13 +42,28 @@ export default function NutritionScreen({ route }) {
         'x-app-key': 'REMOVED_APP_KEY',
         'Content-Type': 'application/json',
       };
+      const sanitizedUPC = barcodeData;
+      
+      console.log("Received route.params:", route.params);
+      console.log("Sanitized barcode data:", sanitizedUPC);
+      console.log("Headers:", headers);
+
+      // const url = 'https://trackapi.nutritionix.com/v2/search/item/?upc=49000000450'
+      const url = `https://trackapi.nutritionix.com/v2/search/item?upc=${sanitizedUPC}`;
+      console.log("URL:", url);
 
       if (searchParam.upc) {
-        response = await axios.post(
-          'https://trackapi.nutritionix.com/v2/search/item',
-          { upc: searchParam.upc },
-          { headers }
-        );
+        try {
+          response = await axios.get(
+            url,
+            // { upc: sanitizedUPC },
+            { headers }
+          );
+          console.log("response: ", response)
+        } catch (error) {
+          console.error('Error fetching nutrition data:', error);
+        }
+        console.log("response: ", response)
       } else if (searchParam.query) {
         response = await axios.post(
           'https://trackapi.nutritionix.com/v2/natural/nutrients',
@@ -55,6 +72,7 @@ export default function NutritionScreen({ route }) {
         );
       }
 
+      console.log('Nutrition data:', response.data.foods);
       setNutritionData(response.data.foods || []);
     } catch (err) {
       console.error('Error fetching nutrition data:', err);
@@ -72,10 +90,10 @@ export default function NutritionScreen({ route }) {
   };
 
   useEffect(() => {
-    if (barcode) {
-      fetchNutritionData({ upc: barcode });
+    if (barcodeData) {
+      fetchNutritionData({ upc: barcodeData });
     }
-  }, [barcode]);
+  }, [barcodeData]);
 
   const handleAddToJournal = async (foodItem) => {
     if (!foodItem) {
@@ -169,7 +187,7 @@ export default function NutritionScreen({ route }) {
         </TouchableOpacity>
       )}
 
-      {barcode && <Text style={styles.barcodeText}>Barcode: {barcode}</Text>}
+      {barcodeData && <Text style={styles.barcodeText}>Barcode: {barcodeData}</Text>}
       {renderNutritionData()}
     </View>
   );
