@@ -6,7 +6,7 @@ import { UserContext } from './UserContext';
 const screenWidth = Dimensions.get('window').width;
 
 export default function JournalScreen({ }) {
-  const userId = useContext(UserContext);
+  const { userId } = useContext(UserContext);
   const [nutritionHistory, setNutritionHistory] = useState([]);
   const [workoutHistory, setWorkoutHistory] = useState([]);
 
@@ -16,16 +16,27 @@ export default function JournalScreen({ }) {
         console.log("User ID: ", userId); 
         return;
       }
-
-      const nutritionData = await getNutritionHistory(userId);
-      const workoutData = await getWorkoutHistory(userId);
-
-      setNutritionHistory(nutritionData);
-      setWorkoutHistory(workoutData);
+  
+      try {
+        const nutritionData = await getNutritionHistory(userId);
+        console.log("Fetched nutrition data:", nutritionData);
+        setNutritionHistory(nutritionData);
+      } catch (error) {
+        console.error("Error fetching nutrition history:", error);
+      }
+  
+      try {
+        const workoutData = await getWorkoutHistory(userId);
+        console.log("Fetched workout data:", workoutData);
+        setWorkoutHistory(workoutData);
+      } catch (error) {
+        console.error("Error fetching workout history:", error);
+      }
     }
-
+  
     fetchData();
   }, [userId]);
+  
 
   // Helper to group nutrition entries by date
   const groupByDate = (entries) => {

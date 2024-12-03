@@ -48,7 +48,7 @@ export const addNutritionEntry = async (userId, entry) => {
     const newEntry = {
       food_name: entry.food_name || 'Unknown',
       meal_type: entry.meal_type || null,
-      consumed_at: entry.consumed_at || new Date(),
+      consumed_at: entry.consumed_at || new Date().toISOString(),
       serving_qty: entry.serving_qty || 1,
       serving_unit: entry.serving_unit || 'unit',
       serving_weight_grams: entry.serving_weight_grams || 0,
@@ -78,13 +78,20 @@ export const addNutritionEntry = async (userId, entry) => {
 
 /**
  * Fetch all entries from the user's nutrition history.
+ * Validates each entry to ensure required fields are present.
+ *
  * @param {string} userId - The user's ID.
  * @returns {Promise<Array>} Nutrition history entries.
  */
 export const getNutritionHistory = async (userId) => {
+  console.log("getNutritionHistory called with userId:", userId);
+
   try {
     const userDocRef = doc(db, 'users', userId);
+    console.log("User doc reference created:", userDocRef);
+
     const userDoc = await getDoc(userDocRef);
+    console.log("Fetched user document:", userDoc.exists() ? userDoc.data() : "No document found");
 
     if (!userDoc.exists()) {
       console.error("User does not exist.");
@@ -92,12 +99,26 @@ export const getNutritionHistory = async (userId) => {
     }
 
     const userData = userDoc.data();
-    const nutritionHistory = userData.nutritionHistory || [];
+    console.log("User data fetched:", userData);
 
-    return nutritionHistory.map((entry, index) => ({
-      id: `${userId}_${index}`, // Unique ID for each entry
-      ...entry,
-    }));
+    const nutritionHistory = userData.nutritionHistory || [];
+    console.log("Nutrition history before processing:", nutritionHistory);
+
+    if (!Array.isArray(nutritionHistory)) {
+      console.error("nutritionHistory is not an array:", nutritionHistory);
+      return [];
+    }
+
+    const processedHistory = nutritionHistory.map((entry, index) => {
+      console.log(`Processing entry ${index}:`, entry);
+      return {
+        id: `${userId}_${index}`,
+        ...entry,
+      };
+    });
+
+    console.log("Processed nutrition history:", processedHistory);
+    return processedHistory;
   } catch (error) {
     console.error("Error fetching nutrition history:", error);
     return [];
