@@ -1,6 +1,5 @@
-// import { firestore } from './firebaseConfig';
 import { db } from './firebaseConfig';
-import { getFirestore, collection, getDocs, addDoc } from 'firebase/firestore';
+import { doc, getDoc, collection, addDoc, arrayUnion, updateDoc } from 'firebase/firestore';
 
 /**
  * Fetch the user's profile data.
@@ -37,26 +36,94 @@ export const updateUserProfile = async (userId, profileData) => {
  */
 export const addNutritionEntry = async (userId, entry) => {
   try {
-    await db.collection('users').doc(userId).collection('nutritionHistory').add(entry);
+    const userDocRef = doc(db, 'users', userId);
+    const userDoc = await getDoc(userDocRef);
+
+    if (!userDoc.exists()) {
+      console.error("User does not exist.");
+      return;
+    }
+
+    const newEntry = {
+      food_name: entry.food_name || 'Unknown',
+      meal_type: entry.meal_type || null,
+      consumed_at: entry.consumed_at || new Date().toISOString(),
+      serving_qty: entry.serving_qty || 1,
+      serving_unit: entry.serving_unit || 'unit',
+      serving_weight_grams: entry.serving_weight_grams || 0,
+      nutrients: {
+        calories: entry.nf_calories || 0,
+        protein: entry.nf_protein || 0,
+        carbs: entry.nf_total_carbohydrate || 0,
+        fat: entry.nf_total_fat || 0,
+        fiber: entry.nf_dietary_fiber || 0,
+        sugars: entry.nf_sugars || 0,
+        sodium: entry.nf_sodium || 0,
+        cholesterol: entry.nf_cholesterol || 0,
+      },
+      photo: entry.photo || {},
+    };
+
+    await updateDoc(userDocRef, {
+      nutritionHistory: arrayUnion(newEntry),
+    });
+
+    console.log("Nutrition entry added successfully:", newEntry);
   } catch (error) {
     console.error("Error adding nutrition entry:", error);
   }
 };
 
+
 /**
  * Fetch all entries from the user's nutrition history.
+ * Validates each entry to ensure required fields are present.
+ *
  * @param {string} userId - The user's ID.
- * @returns {Array} Nutrition history entries.
+ * @returns {Promise<Array>} Nutrition history entries.
  */
 export const getNutritionHistory = async (userId) => {
+  console.log("getNutritionHistory called with userId:", userId);
+
   try {
-    const snapshot = await db.collection('users').doc(userId).collection('nutritionHistory').get();
-    return snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+    const userDocRef = doc(db, 'users', userId);
+    console.log("User doc reference created:", userDocRef);
+
+    const userDoc = await getDoc(userDocRef);
+    console.log("Fetched user document:", userDoc.exists() ? userDoc.data() : "No document found");
+
+    if (!userDoc.exists()) {
+      console.error("User does not exist.");
+      return [];
+    }
+
+    const userData = userDoc.data();
+    console.log("User data fetched:", userData);
+
+    const nutritionHistory = userData.nutritionHistory || [];
+    console.log("Nutrition history before processing:", nutritionHistory);
+
+    if (!Array.isArray(nutritionHistory)) {
+      console.error("nutritionHistory is not an array:", nutritionHistory);
+      return [];
+    }
+
+    const processedHistory = nutritionHistory.map((entry, index) => {
+      console.log(`Processing entry ${index}:`, entry);
+      return {
+        id: `${userId}_${index}`,
+        ...entry,
+      };
+    });
+
+    console.log("Processed nutrition history:", processedHistory);
+    return processedHistory;
   } catch (error) {
     console.error("Error fetching nutrition history:", error);
     return [];
   }
 };
+
 
 /**
  * Add a new entry to the user's workout history.
@@ -65,7 +132,28 @@ export const getNutritionHistory = async (userId) => {
  */
 export const addWorkoutEntry = async (userId, entry) => {
   try {
-    await db.collection('users').doc(userId).collection('workoutHistory').add(entry);
+    const userDocRef = doc(db, 'users', userId);
+    const userDoc = await getDoc(userDocRef);
+
+    if (!userDoc.exists()) {
+      console.error("User does not exist.");
+      return;
+    }
+
+    const newEntry = {
+      workout_name: entry.workout_name || 'Unknown',
+      workout_type: entry.workout_type || null,
+      completed_at: entry.completed_at || new Date(),
+      duration_minutes: entry.duration_minutes || 0,
+      calories_burned: entry.calories_burned || 0,
+      notes: entry.notes || '',
+    };
+
+    await updateDoc(userDocRef, {
+      workoutHistory: arrayUnion(newEntry),
+    });
+
+    console.log("Workout entry added successfully:", newEntry);
   } catch (error) {
     console.error("Error adding workout entry:", error);
   }
@@ -74,17 +162,38 @@ export const addWorkoutEntry = async (userId, entry) => {
 /**
  * Fetch all entries from the user's workout history.
  * @param {string} userId - The user's ID.
- * @returns {Array} Workout history entries.
+ * @returns {Promise<Array>} Workout history entries.
  */
 export const getWorkoutHistory = async (userId) => {
   try {
-    const snapshot = await db.collection('users').doc(userId).collection('workoutHistory').get();
-    return snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+    // Fetch user document from Firestore
+    const userDocRef = doc(db, 'users', userId);
+    const userDoc = await getDoc(userDocRef);
+
+    if (!userDoc.exists()) {
+      console.error("User does not exist.");
+      return [];
+    }
+
+    const userData = userDoc.data();
+    const workoutHistory = userData.workoutHistory || []; // Get workout history
+
+    // Format workout entries and return with unique ID
+    return workoutHistory.map((entry, index) => ({
+      id: `${userId}_${index}`, // Unique ID for each entry (could also be based on timestamp or other unique fields)
+      workout_name: entry.workout_name || 'Unknown', // Ensure workout_name is available
+      workout_type: entry.workout_type || 'Unknown', // Default to 'Unknown' if workout_type is not provided
+      completed_at: entry.completed_at ? entry.completed_at.toDate().toLocaleString() : 'N/A', // Format completed_at to a readable string
+      duration_minutes: entry.duration_minutes || 0, // Default to 0 if duration is missing
+      calories_burned: entry.calories_burned || 0, // Default to 0 if calories burned is missing
+      notes: entry.notes || '', // Ensure notes field is handled
+    }));
   } catch (error) {
     console.error("Error fetching workout history:", error);
     return [];
   }
 };
+
 
 export const saveExercise = async (userId, exerciseName) => {
   try {
@@ -133,7 +242,8 @@ export const deleteExercise = async (userId, exerciseId) => {
 
 export const fetchUserName = async (userId) => {
   try {
-    const userDoc = await db.collection('users').doc(userId).get();
+    const doc = await db.collection('users').doc(userId).get();
+    
     if (doc.exists) {
       return doc.data().userName || null;
     }
@@ -142,7 +252,7 @@ export const fetchUserName = async (userId) => {
     console.error('Error fetching user name:', error.message);
     throw error;
   }
-}
+};
 
 // export const getWeight = async (userId) => {
 //   const doc = await db.collection('users').doc(userId).get();

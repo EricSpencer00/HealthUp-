@@ -4,7 +4,7 @@ import muscles from './Muscles/Muscles'; // Import the muscles list
 import { UserContext } from './UserContext';
 import { saveExercise } from '../firebase/firebaseFunctions';
 
-const API_URL = 'https://exercisedb.p.rapidapi.com/exercises?limit=200&name=';
+const API_URL = 'REMOVED_API_URL=';
 
 // pass userId to FitnessScreen but null if it does not get passed
 export default function FitnessScreen() {

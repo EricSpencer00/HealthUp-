@@ -1,145 +1,183 @@
-import React, { useContext, useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, FlatList } from 'react-native';
+import React, { useContext, useEffect, useState } from 'react';
+import { View, Text, StyleSheet, ScrollView, FlatList, Dimensions } from 'react-native';
+import { getNutritionHistory, getWorkoutHistory } from '../firebase/firebaseFunctions';
 import { UserContext } from './UserContext';
 
-export default function JournalScreen() {
-  const { getWeeklyData, getDailyData, getMonthlyData, completedWorkouts, nutritionJournal } = useContext(UserContext);
-  
-  const [dailyData, setDailyData] = useState(getDailyData());
-  const [weeklyData, setWeeklyData] = useState(getWeeklyData());
-  const [monthlyData, setMonthlyData] = useState(getMonthlyData());
+const screenWidth = Dimensions.get('window').width;
+
+export default function JournalScreen({ }) {
+  const { userId } = useContext(UserContext);
+  const [nutritionHistory, setNutritionHistory] = useState([]);
+  const [workoutHistory, setWorkoutHistory] = useState([]);
 
   useEffect(() => {
-    // Refresh data whenever it changes
-    setDailyData(getDailyData());
-    setWeeklyData(getWeeklyData());
-    setMonthlyData(getMonthlyData());
-  }, [nutritionJournal, completedWorkouts]);
+    async function fetchData() {
+      if (!userId) {
+        console.log("User ID: ", userId); 
+        return;
+      }
 
-  // Function to format date to 'MMMM Do YYYY' format (e.g., "December 1st 2024")
-  const formatDate = (date) => {
-    const options = { year: 'numeric', month: 'long', day: 'numeric' };
-    return new Date(date).toLocaleDateString('en-US', options);
+      try {
+        const nutritionData = await getNutritionHistory(userId);
+        console.log("Fetched nutrition data:", nutritionData);
+        setNutritionHistory(nutritionData);
+      } catch (error) {
+        console.error("Error fetching nutrition history:", error);
+      }
+  
+      try {
+        const workoutData = await getWorkoutHistory(userId);
+        console.log("Fetched workout data:", workoutData);
+        setWorkoutHistory(workoutData);
+      } catch (error) {
+        console.error("Error fetching workout history:", error);
+      }
+    }
+  
+    fetchData();
+  }, [userId]);
+  
+
+  // Helper to group nutrition entries by date
+  const groupByDate = (entries) => {
+    return entries.reduce((acc, entry) => {
+      const date = new Date(entry.consumed_at).toLocaleDateString();
+      if (!acc[date]) acc[date] = [];
+      acc[date].push(entry);
+      return acc;
+    }, {});
   };
 
-  return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Nutrition & Workout Journal</Text>
-      <ScrollView>
-        {/* Daily Data Section */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Daily Nutrition Summary</Text>
-          <Text style={styles.info}>Calories: {dailyData.calories} kcal</Text>
-          <Text style={styles.info}>Protein: {dailyData.protein} g</Text>
-          <Text style={styles.info}>Fat: {dailyData.fat} g</Text>
+  const groupedNutrition = groupByDate(nutritionHistory);
 
-          {/* Daily Breakdown */}
-          <View style={styles.breakdownContainer}>
-            <Text style={styles.breakdownTitle}>Daily Breakdown</Text>
-            {dailyData.breakdown?.map((item, index) => (
-              <View key={index} style={styles.breakdownItem}>
-                <Text style={styles.breakdownText}>{item.foodName} - {item.calories} kcal</Text>
-              </View>
+  // Generate "bar chart" style data visualization using View widths
+  const generateBars = (entries) => {
+    const dates = Object.keys(entries);
+    const caloriesData = dates.map((date) =>
+      entries[date].reduce((sum, item) => sum + item.nutrients.calories, 0)
+    );
+    const maxCalories = Math.max(...caloriesData, 1); // Avoid division by zero
+
+    return dates.map((date, index) => ({
+      date,
+      calories: caloriesData[index],
+      barWidth: (caloriesData[index] / maxCalories) * (screenWidth - 90), // Scale bar width
+    }));
+  };
+
+  const barData = generateBars(groupedNutrition);
+
+  return (
+    <ScrollView style={styles.container}>
+      <Text style={styles.title}>Nutrition & Workout Journal</Text>
+
+      {/* Nutrition Data Section */}
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>Daily Nutrition Overview</Text>
+        {Object.keys(groupedNutrition).map((date, index) => (
+          <View key={index} style={styles.daySection}>
+            <Text style={styles.dateTitle}>{date}</Text>
+            {groupedNutrition[date].map((item, idx) => (
+              <Text key={idx} style={styles.entryText}>
+                {item.food_name}: {item.nutrients.calories} kcal
+              </Text>
             ))}
           </View>
-        </View>
+        ))}
+      </View>
 
-        {/* Weekly Data Section */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Weekly Nutrition Summary</Text>
-          <Text style={styles.info}>Total Calories: {weeklyData.calories} kcal</Text>
-          <Text style={styles.info}>Total Protein: {weeklyData.protein} g</Text>
-          <Text style={styles.info}>Total Fat: {weeklyData.fat} g</Text>
-        </View>
+      {/* Simple "Bar Chart" */}
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>Calories Trend</Text>
+        {barData.map((data, index) => (
+          <View key={index} style={styles.barContainer}>
+            <Text style={styles.barLabel}>{data.date}</Text>
+            <View style={[styles.bar, { width: data.barWidth }]} />
+            <Text style={styles.barValue}>{data.calories} kcal</Text>
+          </View>
+        ))}
+      </View>
 
-        {/* Monthly Data Section */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Monthly Nutrition Summary</Text>
-          <Text style={styles.info}>Total Calories: {monthlyData.calories} kcal</Text>
-          <Text style={styles.info}>Total Protein: {monthlyData.protein} g</Text>
-          <Text style={styles.info}>Total Fat: {monthlyData.fat} g</Text>
-        </View>
-
-        {/* Workouts Section */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Completed Workouts</Text>
-          {completedWorkouts.length === 0 ? (
-            <Text>No workouts completed yet!</Text>
-          ) : (
-            <FlatList
-              data={completedWorkouts}
-              keyExtractor={(item, index) => index.toString()}
-              renderItem={({ item }) => (
+      {/* Workout Data Section */}
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>Workout History</Text>
+        {workoutHistory.length === 0 ? (
+          <Text>No workouts logged yet.</Text>
+        ) : (
+          <FlatList
+            data={workoutHistory}
+            keyExtractor={(item) => item.id}
+            renderItem={({ item }) => (
                 <View style={styles.workoutItem}>
-                  <Text style={styles.workoutText}>{item.name} - {formatDate(item.date)}</Text>
-                  <Text style={styles.workoutText}>Duration: {item.duration} min</Text>
-                  <Text style={styles.workoutText}>Calories Burned: {item.calories} kcal</Text>
+                    <Text style={styles.entryText}>
+                        {item.workout_name}: {item.completed_at} 
+                    </Text>
                 </View>
-              )}
-            />
-          )}
-        </View>
-      </ScrollView>
-    </View>
+            )}
+        />
+        )}
+      </View>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: '#fff',
     padding: 20,
-    backgroundColor: '#F5FCFF',
   },
   title: {
     fontSize: 24,
     fontWeight: 'bold',
     marginBottom: 20,
     textAlign: 'center',
-    color: 'black'
   },
   section: {
     marginBottom: 20,
-    padding: 10,
-    backgroundColor: '#ffffff',
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: '#d6d6d6',
   },
   sectionTitle: {
     fontSize: 20,
     fontWeight: 'bold',
     marginBottom: 10,
   },
-  info: {
-    fontSize: 18,
-    marginBottom: 5,
+  daySection: {
+    marginBottom: 15,
   },
-  breakdownContainer: {
-    marginTop: 10,
-    paddingTop: 10,
-    borderTopWidth: 1,
-    borderColor: '#ccc',
-  },
-  breakdownTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginBottom: 5,
-  },
-  breakdownItem: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    paddingVertical: 5,
-  },
-  breakdownText: {
+  dateTitle: {
     fontSize: 16,
+    fontWeight: 'bold',
+    color: '#333',
+    marginBottom: 5,
+  },
+  entryText: {
+    fontSize: 14,
+    color: '#555',
+  },
+  barContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  barLabel: {
+    width: 70,
+    fontSize: 12,
+    color: '#333',
+  },
+  bar: {
+    height: 20,
+    backgroundColor: '#007AFF',
+    borderRadius: 5,
+    marginHorizontal: 5,
+  },
+  barValue: {
+    fontSize: 12,
+    color: '#333',
   },
   workoutItem: {
-    marginBottom: 10,
     padding: 10,
+    marginBottom: 10,
     backgroundColor: '#e0f7fa',
     borderRadius: 8,
-  },
-  workoutText: {
-    fontSize: 16,
   },
 });

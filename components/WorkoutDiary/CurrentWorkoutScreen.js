@@ -1,38 +1,41 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { View, Text, StyleSheet, FlatList, TouchableOpacity, TextInput } from 'react-native';
-import { getFirestore, getDocs, collection } from 'firebase/firestore';
-
+import { getFirestore, addDoc, collection } from 'firebase/firestore';
+import ConfettiCannon from 'react-native-confetti-cannon';
 import { CountdownCircleTimer } from 'react-native-countdown-circle-timer';
+import { UserContext } from '../UserContext'; // Ensure correct import path
+import { addWorkoutEntry } from '../../firebase/firebaseFunctions'; // Ensure correct import path
+import { Alert } from 'react-native';
 
 import app from '../../firebase/firebaseConfig';
+const db = getFirestore(app);
+
 export default function CurrentWorkoutScreen({ route }) {
-  const { exercises } = route.params || {}; // Fallback to empty object if undefined
+  const { exercises } = route.params || {};
+  const { userId } = useContext(UserContext); // Move useContext to component scope
 
-  // Set default value for exerciseList if it's undefined
   const [exerciseList, setExerciseList] = useState(exercises || []);
-
   const [currentExerciseIdx, setCurrentExerciseIdx] = useState(0);
   const [currentExerciseSets, setCurrentExerciseSets] = useState(
-    (exerciseList[0] && exerciseList[0].sets) || [] // Fallback to empty array if first exercise has no sets
+    (exerciseList[0] && exerciseList[0].sets) || []
   );
   const [currentExerciseName, setCurrentExerciseName] = useState(
-    (exerciseList[0] && exerciseList[0].exercise) || '' // Fallback to empty string if first exercise has no name
+    (exerciseList[0] && exerciseList[0].exercise) || ''
   );
   const [isPlaying, setIsPlaying] = useState(false);
+  const [showConfetti, setShowConfetti] = useState(false);
 
   useEffect(() => {
     if (exerciseList.length > 0) {
       setCurrentExerciseSets(exerciseList[0]?.sets);
       setCurrentExerciseName(exerciseList[0]?.exercise);
-      console.log("P2: Exercises loaded!")
     }
   }, [exerciseList]);
 
   const addSet = () => {
     const updatedSets = [...currentExerciseSets, 0];
     setCurrentExerciseSets(updatedSets);
-  
-    // Update exercise list
+
     const updatedExerciseList = [...exerciseList];
     updatedExerciseList[currentExerciseIdx].sets = updatedSets;
     setExerciseList(updatedExerciseList);
@@ -56,6 +59,39 @@ export default function CurrentWorkoutScreen({ route }) {
 
   const timerStartStop = () => {
     setIsPlaying(!isPlaying);
+  };
+
+  const completeExercise = async () => {
+    if (!userId) {
+      console.error("User ID is missing. Please ensure the user is logged in.");
+      return;
+    }
+
+    try {
+      const workoutEntry = {
+        workout_name: currentExerciseName || 'Unknown Exercise',
+        workout_type: 'Strength Training', // Replace with dynamic type if available
+        completed_at: new Date(),
+        duration_minutes: 0, // You can replace this with actual data if available
+        calories_burned: 0, // Optionally calculate or fetch this value
+        notes: `Completed ${currentExerciseSets.length} sets.`,
+      };
+
+      await addWorkoutEntry(userId, workoutEntry);
+
+      // Add to the journal collection
+      const journalRef = collection(db, 'users', userId, 'journal');
+      await addDoc(journalRef, {
+        ...workoutEntry,
+        timestamp: new Date(),
+      });
+
+      console.log("Workout entry and journal updated successfully:", workoutEntry);
+
+      setShowConfetti(true); // Trigger confetti
+    } catch (error) {
+      console.error("Error completing exercise:", error);
+    }
   };
 
   const UrgeWithPleasureComponent = () => (
@@ -95,12 +131,12 @@ export default function CurrentWorkoutScreen({ route }) {
           placeholder="0"
           keyboardType="numeric"
           maxLength={2}
-          value={item.toString()} 
+          value={item.toString()}
           onChangeText={(text) => {
             const updatedSets = [...currentExerciseSets];
-            updatedSets[index] = parseInt(text, 10) || 0; 
+            updatedSets[index] = parseInt(text, 10) || 0;
             setCurrentExerciseSets(updatedSets);
-  
+
             const updatedExerciseList = [...exerciseList];
             updatedExerciseList[currentExerciseIdx].sets = updatedSets;
             setExerciseList(updatedExerciseList);
@@ -108,30 +144,27 @@ export default function CurrentWorkoutScreen({ route }) {
         />
       </View>
     </View>
-  );  
+  );
 
   return (
     <View style={styles.container}>
+      {showConfetti && <ConfettiCannon count={100} origin={{ x: -10, y: 0 }} />}
+
       <Text style={styles.title}>TODAY'S WORKOUT</Text>
 
-      {/* COUNTDOWN TIMER */}
       <View style={styles.timerWrapper}>
         <UrgeWithPleasureComponent />
       </View>
 
-      {/* EXERCISE PICKER */}
       <View style={styles.horizontalRow}>
-        {/* BUTTON TO GO TO PREV */}
         <TouchableOpacity onPress={goToPrevExercise}>
           <Text style={currentExerciseIdx === 0 ? styles.prevNextButtonsEdge : styles.prevNextButtons}>
             &lt;
           </Text>
         </TouchableOpacity>
 
-        {/* CURRENT EXERCISE TEXT */}
         <Text style={styles.currentExercise}>{currentExerciseName}</Text>
 
-        {/* BUTTON TO GO TO NEXT */}
         <TouchableOpacity onPress={goToNextExercise}>
           <Text style={currentExerciseIdx === exerciseList.length - 1 ? styles.prevNextButtonsEdge : styles.prevNextButtons}>
             &gt;
@@ -139,19 +172,28 @@ export default function CurrentWorkoutScreen({ route }) {
         </TouchableOpacity>
       </View>
 
-      {/* LIST OF SETS */}
       <View style={styles.flatListStyle}>
         <FlatList
           data={currentExerciseSets}
           renderItem={renderItem}
-          ListFooterComponent={<TouchableOpacity onPress={addSet}><Text style={styles.newSetStyle}>Next set!</Text></TouchableOpacity>}
+          ListFooterComponent={
+            <TouchableOpacity onPress={addSet}>
+              <Text style={styles.newSetStyle}>Next set!</Text>
+            </TouchableOpacity>
+          }
         />
       </View>
+
+      <TouchableOpacity style={styles.completeExerciseButton} onPress={completeExercise}>
+        <Text style={styles.buttonText}>COMPLETE EXERCISE</Text>
+      </TouchableOpacity>
+    
     </View>
   );
 }
 
 const styles = StyleSheet.create({
+  // Your existing styles, plus the ones below:
   container: {
     flex: 1,
     justifyContent: 'center',
@@ -241,5 +283,17 @@ const styles = StyleSheet.create({
     paddingVertical: 0,
     fontSize: 17,
     borderRadius: 7,
-  }
+  },
+  completeExerciseButton: {
+    backgroundColor: '#cff7b2',
+    padding: 15,
+    borderRadius: 10,
+    marginTop: 20,
+  },
+  buttonText: {
+    color: '#000',
+    fontSize: 18,
+    textAlign: 'center',
+    fontWeight: 'bold',
+  },
 });
