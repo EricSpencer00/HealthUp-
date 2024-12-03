@@ -18,14 +18,6 @@ export default function JournalScreen({ }) {
       }
   
       try {
-        const nutritionData = await getNutritionHistory(userId);
-        console.log("Fetched nutrition data:", nutritionData);
-        setNutritionHistory(nutritionData);
-      } catch (error) {
-        console.error("Error fetching nutrition history:", error);
-      }
-  
-      try {
         const workoutData = await getWorkoutHistory(userId);
         console.log("Fetched workout data:", workoutData);
         setWorkoutHistory(workoutData);

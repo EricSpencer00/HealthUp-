@@ -1,6 +1,5 @@
 import { db } from './firebaseConfig';
-import 'firebase/firestore';
-import { doc, getDoc, getFirestore, collection, addDoc, arrayUnion, updateDoc } from 'firebase/firestore';
+import { doc, getDoc, collection, addDoc, arrayUnion, updateDoc } from 'firebase/firestore';
 
 /**
  * Fetch the user's profile data.
@@ -167,6 +166,7 @@ export const addWorkoutEntry = async (userId, entry) => {
  */
 export const getWorkoutHistory = async (userId) => {
   try {
+    // Fetch user document from Firestore
     const userDocRef = doc(db, 'users', userId);
     const userDoc = await getDoc(userDocRef);
 
@@ -176,11 +176,17 @@ export const getWorkoutHistory = async (userId) => {
     }
 
     const userData = userDoc.data();
-    const workoutHistory = userData.workoutHistory || [];
+    const workoutHistory = userData.workoutHistory || []; // Get workout history
 
+    // Format workout entries and return with unique ID
     return workoutHistory.map((entry, index) => ({
-      id: `${userId}_${index}`, // Unique ID for each entry
-      ...entry,
+      id: `${userId}_${index}`, // Unique ID for each entry (could also be based on timestamp or other unique fields)
+      workout_name: entry.workout_name || 'Unknown', // Ensure workout_name is available
+      workout_type: entry.workout_type || 'Unknown', // Default to 'Unknown' if workout_type is not provided
+      completed_at: entry.completed_at ? entry.completed_at.toDate().toLocaleString() : 'N/A', // Format completed_at to a readable string
+      duration_minutes: entry.duration_minutes || 0, // Default to 0 if duration is missing
+      calories_burned: entry.calories_burned || 0, // Default to 0 if calories burned is missing
+      notes: entry.notes || '', // Ensure notes field is handled
     }));
   } catch (error) {
     console.error("Error fetching workout history:", error);
@@ -236,7 +242,8 @@ export const deleteExercise = async (userId, exerciseId) => {
 
 export const fetchUserName = async (userId) => {
   try {
-    const userDoc = await db.collection('users').doc(userId).get();
+    const doc = await db.collection('users').doc(userId).get();
+    
     if (doc.exists) {
       return doc.data().userName || null;
     }
@@ -245,7 +252,7 @@ export const fetchUserName = async (userId) => {
     console.error('Error fetching user name:', error.message);
     throw error;
   }
-}
+};
 
 // export const getWeight = async (userId) => {
 //   const doc = await db.collection('users').doc(userId).get();
