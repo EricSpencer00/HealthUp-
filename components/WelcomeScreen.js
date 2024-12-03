@@ -17,10 +17,10 @@ export function WelcomeScreen({ navigation }) {
           <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Login')}>
             <Text style={styles.buttonText}>Login</Text>
           </TouchableOpacity>
-
-          <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Home')}>
+ 
+          {/* <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Home')}>
             <Text style={styles.buttonText}>Home (remove later)</Text>
-          </TouchableOpacity>
+          </TouchableOpacity> */}
 
         </View>
       </ImageBackground>

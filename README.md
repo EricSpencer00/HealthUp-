@@ -48,3 +48,10 @@ Enjoy your time with our app.
 
 - [Eric Spencer](https://github.com/EricSpencer00) - Loyola Chicago Computer Science Student
 - [Matthew Caballero](https://github.com/cabmatthew) - Loyola Chicago Computer Science Student
+
+# ISSUES:
+
+Cannot sign out of app
+Cannot see current User Name
+Keys in Repo
+Styling Issues 
