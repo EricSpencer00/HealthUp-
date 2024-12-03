@@ -9,7 +9,7 @@ export default function BarcodeScreen() {
 
   const handleBarcodeScanned = (data) => {
     setBarcode(data);
-    navigation.navigate('NutritionScreen', { barcodeData: data });
+    navigation.navigate('Nutrition', { barcodeData: data });
   };
 
   return (

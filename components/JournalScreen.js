@@ -16,6 +16,14 @@ export default function JournalScreen({ }) {
         console.log("User ID: ", userId); 
         return;
       }
+
+      try {
+        const nutritionData = await getNutritionHistory(userId);
+        console.log("Fetched nutrition data:", nutritionData);
+        setNutritionHistory(nutritionData);
+      } catch (error) {
+        console.error("Error fetching nutrition history:", error);
+      }
   
       try {
         const workoutData = await getWorkoutHistory(userId);
@@ -53,7 +61,7 @@ export default function JournalScreen({ }) {
     return dates.map((date, index) => ({
       date,
       calories: caloriesData[index],
-      barWidth: (caloriesData[index] / maxCalories) * (screenWidth - 40), // Scale bar width
+      barWidth: (caloriesData[index] / maxCalories) * (screenWidth - 90), // Scale bar width
     }));
   };
 
@@ -100,13 +108,13 @@ export default function JournalScreen({ }) {
             data={workoutHistory}
             keyExtractor={(item) => item.id}
             renderItem={({ item }) => (
-              <View style={styles.workoutItem}>
-                <Text style={styles.entryText}>
-                  {item.name}: {item.duration} min
-                </Text>
-              </View>
+                <View style={styles.workoutItem}>
+                    <Text style={styles.entryText}>
+                        {item.workout_name}: {item.completed_at} 
+                    </Text>
+                </View>
             )}
-          />
+        />
         )}
       </View>
     </ScrollView>
